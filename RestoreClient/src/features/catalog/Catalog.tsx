@@ -1,18 +1,14 @@
-import { Fragment } from "react/jsx-runtime"
 import { Product } from "../../app/models/product"
-import { Button } from "@mui/material"
+import ProductList from "./ProductList"
 
 type Props = {
   products: Product[]
 }
 const Catalog = ({products}: Props) => {
   return (
-    <Fragment>
-      <ul>
-        {products?.map((item, idx) => (<li key={idx}>{item.name} - {item.price}</li>))}
-      </ul>
-      <Button variant='contained'>Add Product</Button>
-    </Fragment>
+    <>
+      <ProductList products={products}/>
+    </>
   )
 }
 export default Catalog
