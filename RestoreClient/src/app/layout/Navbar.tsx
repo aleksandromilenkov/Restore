@@ -1,7 +1,6 @@
 import {
   DarkMode,
   LightMode,
-  ShoppingBag,
   ShoppingCart,
 } from "@mui/icons-material";
 import {
