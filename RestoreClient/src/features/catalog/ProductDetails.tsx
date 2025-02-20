@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { Product } from "../../app/models/product";
 import { useParams } from "react-router-dom";
 import {
   Button,
@@ -13,19 +11,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useFetchProductsDetailsQuery } from "./catalogApi";
 
 const ProductDetails = () => {
-  const [product, setProduct] = useState<Product | null>(null);
   const { id } = useParams();
-  useEffect(() => {
-    const fetchProduct = async () => {
-      const resp = await fetch(`https://localhost:5001/api/products/${id}`);
-      const data = await resp.json();
-      setProduct(data);
-    };
-    fetchProduct();
-  });
-  if (!product) return <div>Loading...</div>;
+  const {data: product, isLoading} = useFetchProductsDetailsQuery(+id!);
+  if (!product || isLoading) return <div>Loading...</div>;
   const productDetails = [
     { label: "Name", value: product.name },
     { label: "Description", value: product.description },
