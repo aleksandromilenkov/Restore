@@ -15,7 +15,8 @@ import {
   Typography,
 } from "@mui/material";
 import { NavLink } from "react-router-dom";
-import { useAppSelector } from "../store/store";
+import { useAppDispatch, useAppSelector } from "../store/store";
+import { toggleDarkMode } from "./uiSlice";
 const midLinks = [
   {
     title: "Catalog",
@@ -51,12 +52,10 @@ const navStyles = {
     color: "#baecf9",
   },
 };
-type Props = {
-  setDarkMode: () => void;
-  darkMode: boolean;
-};
-const Navbar = ({ setDarkMode, darkMode }: Props) => {
-  const {isLoading} = useAppSelector(state=> state.ui);
+
+const Navbar = () => {
+  const {isLoading, darkMode} = useAppSelector(state=> state.ui);
+  const dispatch = useAppDispatch();
   return (
     <AppBar position="fixed">
       <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems:'center' }}>
@@ -64,7 +63,7 @@ const Navbar = ({ setDarkMode, darkMode }: Props) => {
           <Typography component={NavLink} to="/" variant="h6" sx={navStyles}>
             RE-STORE
           </Typography>
-          <IconButton onClick={setDarkMode} color="warning">
+          <IconButton onClick={()=> dispatch(toggleDarkMode())} color="warning">
             {darkMode ? <DarkMode /> : <LightMode sx={{ color: "yellow" }} />}
           </IconButton>
               </Box>
