@@ -1,14 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestoreAPI.Data;
 using RestoreAPI.Entites;
 
 namespace RestoreAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProductsController(StoreContext _context) : ControllerBase
+    public class ProductsController(StoreContext _context) : BaseApiController
     {
         [HttpGet]
         [ProducesResponseType(typeof(Product), 200)]
