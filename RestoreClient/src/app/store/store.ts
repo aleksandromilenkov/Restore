@@ -2,13 +2,15 @@ import { configureStore} from "@reduxjs/toolkit"
 import { useDispatch, useSelector } from "react-redux";
 import { catalogApi } from "../../features/catalog/catalogApi";
 import { uiSlice } from "../layout/uiSlice";
+import { errorApi } from "../../features/about/ErrorApi";
 
 export const store = configureStore({
     reducer:{
         [catalogApi.reducerPath]: catalogApi.reducer,
         ui: uiSlice.reducer,
+        [errorApi.reducerPath]: errorApi.reducer
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(catalogApi.middleware)// Add api middleware for caching and automaticaly refetching
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(catalogApi.middleware, errorApi.middleware)// Add api middleware for caching and automaticaly refetching
 })
 
 export type RootState = ReturnType<typeof store.getState>;
