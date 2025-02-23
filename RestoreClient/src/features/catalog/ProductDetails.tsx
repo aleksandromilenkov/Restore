@@ -12,11 +12,27 @@ import {
   Typography,
 } from "@mui/material";
 import { useFetchProductsDetailsQuery } from "./catalogApi";
+import { useState } from "react";
+import { useAddItemToCartMutation } from "../cart/cartApi";
+import { CreateCartItem } from "../../app/models/createCartItem";
+import { toast } from "react-toastify";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const [quantity, setQuantity ]= useState(1);
   const {data: product, isLoading} = useFetchProductsDetailsQuery(+id!);
-  if (!product || isLoading) return <div>Loading...</div>;
+  const [addToCart, {isLoading: addingItemToCart} ] = useAddItemToCartMutation();
+  if (!product || isLoading || addingItemToCart) return <div>Loading...</div>;
+  const addToCartHandler = async ()=>{
+    const cartItemToCreate: CreateCartItem = {
+      productId: product.id,
+      quantity: quantity
+    };
+   const result = await addToCart(cartItemToCreate);
+   if(result.data) {
+    toast.success("Product added to cart.")
+   }
+  }
   const productDetails = [
     { label: "Name", value: product.name },
     { label: "Description", value: product.description },
@@ -66,6 +82,7 @@ const ProductDetails = () => {
                 label="Quantity in cart"
                 fullWidth
                 defaultValue={1}
+                onChange={(e)=> setQuantity(+e.target.value)}
               />
             </Grid2>
             <Grid2 size={6}>
@@ -75,6 +92,7 @@ const ProductDetails = () => {
                 size="large"
                 variant="contained"
                 fullWidth
+                onClick={addToCartHandler}
               >
                 Add to cart
               </Button>

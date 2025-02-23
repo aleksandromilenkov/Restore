@@ -8,11 +8,26 @@ import {
 } from "@mui/material";
 import { Product } from "../../app/models/product";
 import { Link } from "react-router-dom";
+import { useAddItemToCartMutation } from "../cart/cartApi";
+import { CreateCartItem } from "../../app/models/createCartItem";
+import { toast } from "react-toastify";
 
 type Props = {
   product: Product;
-};
+}; 
 const ProductCard = ({ product }: Props) => {
+   const [addToCart, {isLoading: isLoading} ] = useAddItemToCartMutation();
+   if(isLoading) return <Typography>Adding to cart...</Typography>
+   const addToCartHandler = async ()=>{
+       const cartItemToCreate: CreateCartItem = {
+         productId: product.id,
+         quantity: 1
+       };
+      const result = await addToCart(cartItemToCreate);
+      if(result.data) {
+       toast.success("Product added to cart.")
+      }
+    }
   return (
     <Card
       elevation={3}
@@ -42,7 +57,7 @@ const ProductCard = ({ product }: Props) => {
         </Typography>
       </CardContent>
       <Box sx={{ justifyContent: "space-between" }}>
-        <Button>Add to cart</Button>
+        <Button onClick={addToCartHandler} disabled={isLoading}>Add to cart</Button>
         <Button component={Link} to={`/catalog/${product.id}`}>View</Button>
       </Box>
     </Card>

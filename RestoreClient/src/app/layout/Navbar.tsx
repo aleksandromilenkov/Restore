@@ -75,7 +75,7 @@ const Navbar = () => {
             ))}
           </List>
         <Box sx={{ display: "flex", alignItems:'center' }}>
-          <IconButton size="large" sx={{ color: "inherit" }}>
+          <IconButton size="large" sx={{ color: "inherit" }} component={NavLink} to='cart'>
             <Badge badgeContent="4" color="secondary">
               <ShoppingCart />
             </Badge>
