@@ -1,11 +1,19 @@
 import { Box, Grid2, IconButton, Paper, Typography } from "@mui/material"
 import { CartItem as modelCartItem } from "../../app/models/cartItem"
 import { Add, Close, Remove } from "@mui/icons-material"
+import { useRemoveItemFromCartMutation } from "./cartApi"
 
 type Props = {
     item: modelCartItem
 }
 const CartItem = ({item}: Props) => {
+    const [removeItem] = useRemoveItemFromCartMutation();
+  const removeCartItemHandler = async ()=>{
+    await removeItem({productId: item.productId, quantity: 1});
+  }
+  const completlyRemoveCartItemHandler = async()=>{
+    await removeItem({productId: item.productId, quantity: item.quantity});
+  }
   return (
     <Paper sx={{
         height:140,
@@ -39,7 +47,9 @@ const CartItem = ({item}: Props) => {
                         border:1,
                         borderRadius:1,
                         minWidth:0
-                    }}>
+                    }}
+                    onClick={removeCartItemHandler}
+                    >
                         <Remove/>
                     </IconButton>
                     <Typography variant="h6">{item.quantity}</Typography>
@@ -60,7 +70,8 @@ const CartItem = ({item}: Props) => {
                         alignSelf:'start',
                         mr:1,
                         mt:1
-                    }}>
+                    }}
+                    onClick={completlyRemoveCartItemHandler}>
             <Close/>            
         </IconButton>
     </Paper>
