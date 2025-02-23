@@ -25,7 +25,7 @@ const ProductDetails = () => {
   if (!product || isLoading || addingItemToCart) return <div>Loading...</div>;
   const addToCartHandler = async ()=>{
     const cartItemToCreate: CreateCartItem = {
-      productId: product.id,
+      product: product,
       quantity: quantity
     };
    const result = await addToCart(cartItemToCreate);

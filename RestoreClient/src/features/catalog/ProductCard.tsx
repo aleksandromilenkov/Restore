@@ -17,10 +17,9 @@ type Props = {
 }; 
 const ProductCard = ({ product }: Props) => {
    const [addToCart, {isLoading: isLoading} ] = useAddItemToCartMutation();
-   if(isLoading) return <Typography>Adding to cart...</Typography>
    const addToCartHandler = async ()=>{
        const cartItemToCreate: CreateCartItem = {
-         productId: product.id,
+         product: product,
          quantity: 1
        };
       const result = await addToCart(cartItemToCreate);

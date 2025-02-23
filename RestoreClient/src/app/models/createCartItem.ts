@@ -1,4 +1,6 @@
+import { Product } from "./product"
+
 export type CreateCartItem = {
-    productId: number,
+    product: Product,
     quantity: number
 }
