@@ -1,21 +1,23 @@
-import { Typography } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import { useFetchCartQuery } from "./cartApi";
+import { useAppSelector } from "../../app/store/store";
+import CartItem from "./CartItem";
 
-type Props = {}
-const CartPage = (props: Props) => {
+const CartPage = () => {
     const {data, isLoading} = useFetchCartQuery();
+    const store = useAppSelector(state=>state);
+    console.log(store)
     console.log(data);
     if(isLoading) return <div>Loading...</div>
     console.log(data);
     if(!data) return <Typography variant="h3">Your cart is empty.</Typography>
   return (
-    <div>Cart
-        {data.items.map(item=>(<div key={item.productId}>
-            <p>{item.name}</p>
-            <p>{item.quantity}</p>
-            
-            </div>))}
-    </div>
+    <Grid2 container spacing={2}>
+        <Grid2 size={8}>
+            {data.items.map((item)=>
+            (<CartItem key={item.productId} item={item}/>))}
+        </Grid2>
+    </Grid2>
   )
 }
 export default CartPage
