@@ -11,7 +11,7 @@ const CartPage = () => {
     console.log(data);
     if(isLoading) return <div>Loading...</div>
     console.log(data);
-    if(!data) return <Typography variant="h3">Your cart is empty.</Typography>
+    if(!data || data?.items?.length === 0) return <Typography variant="h3">Your cart is empty.</Typography>
   return (
     <Grid2 container spacing={2}>
         <Grid2 size={8}>

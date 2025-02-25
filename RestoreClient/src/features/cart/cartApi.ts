@@ -31,23 +31,30 @@ export const cartApi = createApi({
         { dispatch, queryFulfilled }
       ) => {
         // manually updating the cached data from fetchCart query
+        let isNewCart = false;
         const patchResult = dispatch(
           cartApi.util.updateQueryData("fetchCart", undefined, (draftData) => {
-            const productId = isCartItem(product)
-              ? product.productId
-              : product.id;
-            const existingItem = draftData.items.find(
-              (i) => i.productId === productId
-            );
-            if (existingItem) existingItem.quantity += quantity;
-            else
-              draftData.items.push(
-                isCartItem(product) ? product : new CartItem(product, quantity)
+            if (!draftData) isNewCart = true;
+            if (!isNewCart) {
+              const productId = isCartItem(product)
+                ? product.productId
+                : product.id;
+              const existingItem = draftData.items.find(
+                (i) => i.productId === productId
               );
+              if (existingItem) existingItem.quantity += quantity;
+              else
+                draftData.items.push(
+                  isCartItem(product)
+                    ? product
+                    : { ...product, productId: product.id, quantity: quantity }
+                );
+            }
           })
         );
         try {
           await queryFulfilled;
+          if(isNewCart) dispatch(cartApi.util.invalidateTags(["Cart"]));
         } catch (error) {
           console.log(error);
           // if addItemToCart mutation fails then the manually updated data is reverted

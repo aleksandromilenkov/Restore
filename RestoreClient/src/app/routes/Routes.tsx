@@ -8,6 +8,7 @@ import ContactPage from "../../features/contact/ContactPage";
 import ServerError from "../errors/ServerError";
 import NotFound from "../errors/NotFound";
 import CartPage from "../../features/cart/CartPage";
+import CheckoutPage from "../../features/checkout/CheckoutPage";
 
 export const router = createBrowserRouter([
     {
@@ -39,6 +40,10 @@ export const router = createBrowserRouter([
           {
             path: "cart",
             element: <CartPage />,
+          },
+          {
+            path: "checkout",
+            element: <CheckoutPage />,
           },
           {
             path: "server-error",

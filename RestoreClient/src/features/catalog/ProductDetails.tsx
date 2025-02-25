@@ -21,7 +21,7 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(0);
   const { data: product, isLoading } = useFetchProductsDetailsQuery(+id!);
   const [addToCart, { isLoading: addingItemToCart }] = useAddItemToCartMutation();
-  const [removeFromCart] = useRemoveItemFromCartMutation();
+  const [removeFromCart, { isLoading: removingItemToCart }] = useRemoveItemFromCartMutation();
   const { data: cartItems } = useFetchCartQuery();
   const item = product && cartItems?.items.find((i) => i.productId === product.id);
 
@@ -29,7 +29,7 @@ const ProductDetails = () => {
     if (item) setQuantity(item.quantity);
   }, [item]);
 
-  if (!product || isLoading || addingItemToCart) return <div>Loading...</div>;
+  if (!product || isLoading || addingItemToCart || removingItemToCart) return <div>Loading...</div>;
   
   const handleUpdateBasket = async ()=>{
     const updatedQuantity = item ? Math.abs(quantity - item.quantity) : quantity;
