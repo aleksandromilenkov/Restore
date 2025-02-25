@@ -12,27 +12,42 @@ import {
   Typography,
 } from "@mui/material";
 import { useFetchProductsDetailsQuery } from "./catalogApi";
-import { useState } from "react";
-import { useAddItemToCartMutation } from "../cart/cartApi";
-import { CreateCartItem } from "../../app/models/createCartItem";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useAddItemToCartMutation, useFetchCartQuery, useRemoveItemFromCartMutation } from "../cart/cartApi";
 import { toast } from "react-toastify";
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const [quantity, setQuantity ]= useState(1);
-  const {data: product, isLoading} = useFetchProductsDetailsQuery(+id!);
-  const [addToCart, {isLoading: addingItemToCart} ] = useAddItemToCartMutation();
+  const [quantity, setQuantity] = useState(0);
+  const { data: product, isLoading } = useFetchProductsDetailsQuery(+id!);
+  const [addToCart, { isLoading: addingItemToCart }] = useAddItemToCartMutation();
+  const [removeFromCart] = useRemoveItemFromCartMutation();
+  const { data: cartItems } = useFetchCartQuery();
+  const item = product && cartItems?.items.find((i) => i.productId === product.id);
+
+  useEffect(() => {
+    if (item) setQuantity(item.quantity);
+  }, [item]);
+
   if (!product || isLoading || addingItemToCart) return <div>Loading...</div>;
-  const addToCartHandler = async ()=>{
-    const cartItemToCreate: CreateCartItem = {
-      product: product,
-      quantity: quantity
-    };
-   const result = await addToCart(cartItemToCreate);
-   if(result.data) {
-    toast.success("Product added to cart.")
-   }
+  
+  const handleUpdateBasket = async ()=>{
+    const updatedQuantity = item ? Math.abs(quantity - item.quantity) : quantity;
+    if(!item || quantity > item.quantity){
+      const result = await addToCart({product:product, quantity: updatedQuantity});
+      if (result.data) {
+        toast.success("Product added to cart.");
+      }
+    } else {
+      removeFromCart({productId: product.id, quantity: updatedQuantity});
+    }
   }
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>)=> {
+    const value = +event.target.value;
+    if(value>=0) setQuantity(value);
+  }
+
   const productDetails = [
     { label: "Name", value: product.name },
     { label: "Description", value: product.description },
@@ -40,6 +55,7 @@ const ProductDetails = () => {
     { label: "Brand", value: product.brand },
     { label: "Quantity in stock", value: product.quantityInStock },
   ];
+
   return (
     <div>
       <Grid2 container spacing={6} maxWidth="lg" sx={{ mx: "auto" }}>
@@ -81,20 +97,21 @@ const ProductDetails = () => {
                 type="number"
                 label="Quantity in cart"
                 fullWidth
-                defaultValue={1}
-                onChange={(e)=> setQuantity(+e.target.value)}
+                value={quantity}
+                onChange={handleInputChange}
               />
             </Grid2>
             <Grid2 size={6}>
               <Button
-              sx={{height:'55px'}}
+                sx={{ height: "55px" }}
+                disabled={quantity === item?.quantity || !item && quantity === 0}
                 color="primary"
                 size="large"
                 variant="contained"
                 fullWidth
-                onClick={addToCartHandler}
+                onClick={handleUpdateBasket}
               >
-                Add to cart
+                {item ? "Update Cart" : "Add to cart"}
               </Button>
             </Grid2>
           </Grid2>

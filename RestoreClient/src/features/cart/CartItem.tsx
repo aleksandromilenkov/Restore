@@ -5,6 +5,7 @@ import {
   useAddItemToCartMutation,
   useRemoveItemFromCartMutation,
 } from "./cartApi";
+import { currencyFormat } from "../../lib/util";
 
 type Props = {
   item: modelCartItem;
@@ -52,11 +53,11 @@ const CartItem = ({ item }: Props) => {
           <Typography variant="h6">{item.name}</Typography>
           <Box display="flex" alignItems="center" gap={3}>
             <Typography sx={{ fontSize: "1.1rem" }}>
-              ${(item.price / 100).toFixed(2)} x {item.quantity}{" "}
+              {currencyFormat(item.price)} x {item.quantity}{" "}
               {/*because price is long, and long must be divided by 100*/}
             </Typography>
             <Typography sx={{ fontSize: "1.1rem" }} color="primary">
-              ${((item.price / 100) * item.quantity).toFixed(2)}
+              {currencyFormat(item.price * item.quantity)}
             </Typography>
           </Box>
           <Grid2 container spacing={1} alignItems="center">

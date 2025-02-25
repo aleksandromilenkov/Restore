@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { useAddItemToCartMutation } from "../cart/cartApi";
 import { CreateCartItem } from "../../app/models/createCartItem";
 import { toast } from "react-toastify";
+import { currencyFormat } from "../../lib/util";
 
 type Props = {
   product: Product;
@@ -52,7 +53,7 @@ const ProductCard = ({ product }: Props) => {
           {product.name}
         </Typography>
         <Typography variant="h6" sx={{ color: "secondary.main" }}>
-          ${(product.price / 100).toFixed(2)}
+          {currencyFormat(product.price)}
         </Typography>
       </CardContent>
       <Box sx={{ justifyContent: "space-between" }}>

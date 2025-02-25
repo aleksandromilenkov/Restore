@@ -2,6 +2,7 @@ import { Grid2, Typography } from "@mui/material";
 import { useFetchCartQuery } from "./cartApi";
 import { useAppSelector } from "../../app/store/store";
 import CartItem from "./CartItem";
+import OrderSummary from "../../app/shared/components/OrderSummary";
 
 const CartPage = () => {
     const {data, isLoading} = useFetchCartQuery();
@@ -16,6 +17,9 @@ const CartPage = () => {
         <Grid2 size={8}>
             {data.items.map((item)=>
             (<CartItem key={item.productId} item={item}/>))}
+        </Grid2>
+        <Grid2 size={4}>
+            <OrderSummary/>
         </Grid2>
     </Grid2>
   )
