@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RestoreAPI.Data;
 using RestoreAPI.Entites;
 using RestoreAPI.Extensions;
+using RestoreAPI.RequestHelpers;
 
 namespace RestoreAPI.Controllers
 {
@@ -10,11 +11,12 @@ namespace RestoreAPI.Controllers
     {
         [HttpGet]
         [ProducesResponseType(typeof(Product), 200)]
-        public async Task<ActionResult<List<Product>>> GetProducts(string? orderBy, string? searchTerm)
+        public async Task<ActionResult<List<Product>>> GetProducts([FromQuery] ProductsQueryObject queryObject)
         {
             var query = _context.Products
-                .Sort(orderBy)
-                .Search(searchTerm)
+                .Sort(queryObject.OrderBy)
+                .Search(queryObject.SearchTerm)
+                .Filter(queryObject.Brands, queryObject.Types)
                 .AsQueryable();
             var products = await query.ToListAsync();
             return Ok(products);

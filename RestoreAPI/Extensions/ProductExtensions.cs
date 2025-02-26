@@ -23,5 +23,18 @@ namespace RestoreAPI.Extensions
             var lowerCaseSearchTerm = term.ToLower();
             return products.Where(p => p.Name.ToLower().Contains(lowerCaseSearchTerm));
         }
+
+        public static IQueryable<Product> Filter(this IQueryable<Product> products, string? brands, string? types)
+        {
+            if (!string.IsNullOrEmpty(brands)) {
+                var brandList = brands.ToLower().Split(",").ToList(); // or we can use HashSet instead of list like this new HashSet<string>(brands.ToLower().Split(",")); since HashSets.Contains has speed O(1) and List.Contains O(n)
+                products = products.Where(p=> brandList.Contains(p.Brand.ToLower()));
+            }            
+            if (!string.IsNullOrEmpty(types)) {
+                var typeList = types.ToLower().Split(",").ToList();
+                products = products.Where(p=> typeList.Contains(p.Type.ToLower()));
+            }
+            return products;
+        }
     }
 }
