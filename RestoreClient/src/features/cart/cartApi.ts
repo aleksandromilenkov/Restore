@@ -26,10 +26,7 @@ export const cartApi = createApi({
           method: "POST",
         };
       },
-      onQueryStarted: async (
-        { product, quantity },
-        { dispatch, queryFulfilled }
-      ) => {
+      onQueryStarted: async ({ product, quantity },{ dispatch, queryFulfilled }) => {
         // manually updating the cached data from fetchCart query
         let isNewCart = false;
         const patchResult = dispatch(
