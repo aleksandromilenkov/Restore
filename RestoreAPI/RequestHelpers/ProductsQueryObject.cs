@@ -1,6 +1,6 @@
 ﻿namespace RestoreAPI.RequestHelpers
 {
-    public class ProductsQueryObject
+    public class ProductsQueryObject : PaginationParams
     {
         public string? OrderBy { get; set; }
         public string? SearchTerm { get; set; }

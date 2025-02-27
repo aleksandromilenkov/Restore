@@ -18,8 +18,9 @@ namespace RestoreAPI.Controllers
                 .Search(queryObject.SearchTerm)
                 .Filter(queryObject.Brands, queryObject.Types)
                 .AsQueryable();
-            var products = await query.ToListAsync();
-            return Ok(products);
+            var products = await PagedList<Product>.ToPagedList(query, queryObject.PageNumber, queryObject.PageSize);
+            Response.AddPaginationHeader(products.Metadata);
+            return products;
         }
 
         [HttpGet("{id:int}")]
