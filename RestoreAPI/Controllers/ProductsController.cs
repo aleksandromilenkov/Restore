@@ -31,5 +31,13 @@ namespace RestoreAPI.Controllers
             var product = await _context.Products.FindAsync(id);
             return product is null ? NotFound() : Ok(product);
         }
+
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilters()
+        {
+            var brands = await _context.Products.Select(p =>  p.Brand).Distinct().ToListAsync();
+            var types = await _context.Products.Select(p =>  p.Type).Distinct().ToListAsync();
+            return Ok(new {Brands = brands, types = types});
+        }
     }
 }
