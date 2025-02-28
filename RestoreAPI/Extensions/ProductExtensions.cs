@@ -20,7 +20,7 @@ namespace RestoreAPI.Extensions
         {
             if (string.IsNullOrEmpty(term)) return products;
 
-            var lowerCaseSearchTerm = term.ToLower();
+            var lowerCaseSearchTerm = term.ToLower().Trim();
             return products.Where(p => p.Name.ToLower().Contains(lowerCaseSearchTerm));
         }
 

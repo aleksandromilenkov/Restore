@@ -7,15 +7,13 @@ type Props = {
 }
 const ProductList = ({products}: Props) => {
   return (
-    <div>
         <Grid2 container spacing={3}>
         {products?.map(item => (
-          <Grid2 size={3} display="flex">
+          <Grid2 size={3} display="flex" key={item.id}>
            <ProductCard key={item.id} product={item}/>
           </Grid2>
           ))}
       </Grid2>
-    </div>
   )
 }
 export default ProductList

@@ -2,9 +2,11 @@ import { Grid2 } from "@mui/material";
 import ProductList from "./ProductList"
 import { useFetchProductsQuery } from "./catalogApi";
 import Filters from "./Filters";
+import { useAppSelector } from "../../app/store/store";
 
 const Catalog = () => {
-  const {data, isLoading} = useFetchProductsQuery();
+  const productParams = useAppSelector(state => state.catalogSlice);
+  const {data, isLoading} = useFetchProductsQuery(productParams);
   if(isLoading || !data) return <div>Loading...</div>
   return (
     <Grid2 container spacing={4}>

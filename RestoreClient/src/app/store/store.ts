@@ -4,13 +4,15 @@ import { catalogApi } from "../../features/catalog/catalogApi";
 import { uiSlice } from "../layout/uiSlice";
 import { errorApi } from "../../features/about/ErrorApi";
 import { cartApi } from "../../features/cart/cartApi";
+import { catalogSlice } from "../../features/catalog/catalogSlice";
 
 export const store = configureStore({
     reducer:{
         [catalogApi.reducerPath]: catalogApi.reducer,
         [cartApi.reducerPath]: cartApi.reducer,
         ui: uiSlice.reducer,
-        [errorApi.reducerPath]: errorApi.reducer
+        [errorApi.reducerPath]: errorApi.reducer,
+        catalogSlice: catalogSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
          getDefaultMiddleware()
