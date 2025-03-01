@@ -15,8 +15,8 @@ export const catalogApi = createApi({
                 params.append("pageSize", pageSize.toString());
                 if (orderBy) params.append("orderBy", orderBy);
                 if (searchTerm) params.append("searchTerm", searchTerm);
-                if (brands && brands.length > 0) brands.forEach(brand => params.append("brands", brand));
-                if (types && types.length > 0) types.forEach(type => params.append("types", type));
+                if (brands && brands.length > 0) params.append("brands", brands.join(","));
+                if (types && types.length > 0)params.append("types", types.join(","));
                 return { url: `products?${params.toString()}` };
             }
         }),

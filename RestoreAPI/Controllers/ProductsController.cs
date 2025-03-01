@@ -37,7 +37,7 @@ namespace RestoreAPI.Controllers
         {
             var brands = await _context.Products.Select(p =>  p.Brand).Distinct().ToListAsync();
             var types = await _context.Products.Select(p =>  p.Type).Distinct().ToListAsync();
-            return Ok(new {Brands = brands, types = types});
+            return Ok(new {Brands = brands, Types = types});
         }
     }
 }
