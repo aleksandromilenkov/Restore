@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RestoreAPI.Data;
+using RestoreAPI.Entites;
 using RestoreAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,12 @@ builder.Services.AddDbContext<StoreContext>(options =>
 });
 builder.Services.AddCors();
 builder.Services.AddTransient<ExceptionMiddleware>();
+builder.Services.AddIdentityApiEndpoints<User>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+}).AddRoles<IdentityRole>()
+  .AddEntityFrameworkStores<StoreContext>();
+    
 
 var app = builder.Build();
 
@@ -26,7 +34,11 @@ app.UseCors(options =>
     .AllowCredentials()
     .WithOrigins("https://localhost:3000");
 });
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
+app.MapGroup("api").MapIdentityApi<User>(); // ex: api/login
 
 DbInitializer.InitDb(app);
 

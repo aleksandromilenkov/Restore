@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using RestoreAPI.Entites;
 
 namespace RestoreAPI.Data
@@ -10,14 +11,34 @@ namespace RestoreAPI.Data
             using var scope = app.Services.CreateScope(); // because DependencyInjection can't be used before app.Run(), we must take app.Services.CreateScope which then takes ServiceProvider and then takes the Database
             var context = scope.ServiceProvider.GetRequiredService<StoreContext>()
                 ?? throw new InvalidOperationException("Failed to retreive store context");
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>()
+                ?? throw new InvalidOperationException("Failed to retreive user manager");
             
-            SeedData(context);
+            SeedData(context, userManager);
         }
 
-        private static void SeedData(StoreContext context)
+        private static async void SeedData(StoreContext context, UserManager<User> userManager)
         {
             // this will always be called Database.Migrate(): 
             context.Database.Migrate(); // if doesn't have the DB it will create the DB and apply all the pending migrations
+
+            if (!userManager.Users.Any()) {
+                var user = new User
+                {
+                    UserName = "asd@asd.com",
+                    Email = "asd@asd.com",
+                };
+                await userManager.CreateAsync(user, "Pa$$w0rd");
+                await userManager.AddToRoleAsync(user, "Member");
+
+                var admin = new User
+                {
+                    UserName = "admin@admin.com",
+                    Email = "admin@admin.com",
+                };
+                await userManager.CreateAsync(admin, "Pa$$w0rd");
+                await userManager.AddToRolesAsync(admin, ["Member", "Admin"]);
+            }
             if (context.Products.Any()) return;
             var products = new List<Product>
             {

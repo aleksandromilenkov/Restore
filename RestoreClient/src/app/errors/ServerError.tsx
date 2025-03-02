@@ -6,7 +6,7 @@ export default function ServerError() {
 
     return (
         <Paper>
-            {state.error ? (
+            {state?.error ? (
                 <>
                     <Typography gutterBottom variant="h3" sx={{px: 4, pt: 2}} color="secondary">
                         {state.error.title}
@@ -15,7 +15,7 @@ export default function ServerError() {
                     <Typography variant="body1" sx={{p: 4}}>{state.error.detail}</Typography>
                 </>
             ) : (
-                <Typography variant="h5" gutterBottom>Server error</Typography>
+                <Typography variant="h5" gutterBottom>500 Internal Server error</Typography>
             )}
         </Paper>
     )
