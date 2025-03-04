@@ -9,6 +9,7 @@ import ServerError from "../errors/ServerError";
 import NotFound from "../errors/NotFound";
 import CartPage from "../../features/cart/CartPage";
 import CheckoutPage from "../../features/checkout/CheckoutPage";
+import LoginForm from "../../features/account/LoginForm";
 
 export const router = createBrowserRouter([
     {
@@ -19,7 +20,6 @@ export const router = createBrowserRouter([
           {
             path: "",
             element: <HomePage />,
-           
           },
           {
             path: "catalog",
@@ -44,6 +44,10 @@ export const router = createBrowserRouter([
           {
             path: "checkout",
             element: <CheckoutPage />,
+          },
+          {
+            path: "login",
+            element: <LoginForm />,
           },
           {
             path: "server-error",
