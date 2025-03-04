@@ -1,20 +1,21 @@
 import { LockOutlined } from "@mui/icons-material"
 import { Box, Button, Container, Paper, TextField, Typography } from "@mui/material"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import {useForm} from "react-hook-form"
 import { loginSchema, LoginSchema } from "../../lib/schemas/loginSchema"
 import {zodResolver} from "@hookform/resolvers/zod";
 import { useLoginMutation } from "./accountApi"
 
 const LoginForm = () => {
+    const navigate = useNavigate();
     const [login, {isLoading}] = useLoginMutation();
     const {register, handleSubmit, formState: {errors}} = useForm<LoginSchema>({
         mode: "onTouched", // validation will kick in if we just touch one field
         resolver: zodResolver(loginSchema)
     });
     const onSubmit = async (data: LoginSchema) => {
-        console.log(data);
         await login(data);
+        navigate("/catalog");
     }
   return (
     <Container component={Paper} maxWidth="sm" sx={{borderRadius:3}}>

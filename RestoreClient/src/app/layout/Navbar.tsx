@@ -18,6 +18,8 @@ import { NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { toggleDarkMode } from "./uiSlice";
 import { useFetchCartQuery } from "../../features/cart/cartApi";
+import UserMenu from "./UserMenu";
+import { useUserInfoQuery } from "../../features/account/accountApi";
 const midLinks = [
   {
     title: "Catalog",
@@ -55,6 +57,7 @@ const navStyles = {
 };
 
 const Navbar = () => {
+  const {data: user} = useUserInfoQuery();
   const {isLoading, darkMode} = useAppSelector(state=> state.ui);
   const dispatch = useAppDispatch();
   const {data} = useFetchCartQuery();
@@ -83,13 +86,17 @@ const Navbar = () => {
               <ShoppingCart />
             </Badge>
           </IconButton>
-          <List sx={{ display: "flex" }}>
+          { user 
+            ? (
+            <UserMenu user={user}/>)
+            : (<List sx={{ display: "flex" }}>
             {rightLinks.map(({ title, path }, idx) => (
               <ListItem component={NavLink} to={path} key={idx} sx={navStyles}>
                 {title.toUpperCase()}
               </ListItem>
             ))}
-          </List>
+          </List>)
+          }
         </Box>
       </Toolbar>
       {isLoading && (
