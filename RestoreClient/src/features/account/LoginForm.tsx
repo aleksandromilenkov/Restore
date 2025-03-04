@@ -1,8 +1,21 @@
 import { LockOutlined } from "@mui/icons-material"
 import { Box, Button, Container, Paper, TextField, Typography } from "@mui/material"
 import { Link } from "react-router-dom"
+import {useForm} from "react-hook-form"
+import { loginSchema, LoginSchema } from "../../lib/schemas/loginSchema"
+import {zodResolver} from "@hookform/resolvers/zod";
+import { useLoginMutation } from "./accountApi"
 
 const LoginForm = () => {
+    const [login, {isLoading}] = useLoginMutation();
+    const {register, handleSubmit, formState: {errors}} = useForm<LoginSchema>({
+        mode: "onTouched", // validation will kick in if we just touch one field
+        resolver: zodResolver(loginSchema)
+    });
+    const onSubmit = async (data: LoginSchema) => {
+        console.log(data);
+        await login(data);
+    }
   return (
     <Container component={Paper} maxWidth="sm" sx={{borderRadius:3}}>
         <Box display="flex" flexDirection="column" alignItems="center" marginTop="8">
@@ -12,6 +25,7 @@ const LoginForm = () => {
             </Typography>
             <Box
               component="form"
+              onSubmit={handleSubmit(onSubmit)}
               width="100%"
               display="flex"
               flexDirection="column"
@@ -22,13 +36,19 @@ const LoginForm = () => {
                     fullWidth
                     label="Email"
                     autoFocus
+                    {...register("email")}
+                    error = {!!errors.email}
+                    helperText={errors.email?.message}
                 />
                 <TextField
                     fullWidth
                     label="Password"
                     type="password"
+                    {...register("password")}
+                    error = {!!errors.password}
+                    helperText={errors.password?.message}
                 />
-                <Button variant="contained">
+                <Button disabled={isLoading} variant="contained" type="submit">
                     Sign in
                 </Button>
                 <Typography sx={{textAlign:"center"}}>
