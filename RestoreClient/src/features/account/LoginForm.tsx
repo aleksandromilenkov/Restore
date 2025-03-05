@@ -14,8 +14,12 @@ const LoginForm = () => {
         resolver: zodResolver(loginSchema)
     });
     const onSubmit = async (data: LoginSchema) => {
-        await login(data);
-        navigate("/catalog");
+         try{
+            await login(data).unwrap();
+            navigate("/catalog");
+         }catch(err){
+            console.log(err);
+         }
     }
   return (
     <Container component={Paper} maxWidth="sm" sx={{borderRadius:3}}>
