@@ -6,6 +6,8 @@ namespace RestoreAPI.Entites
         public int Id { get; set; }
         public required string CartId { get; set; } // store this as cookie in browser (int for Id, guid for storing)
         public List<CartItem> Items { get; set; } = new List<CartItem>();
+        public string? ClientSecret { get; set; }
+        public string? PaymentIntentId { get; set; }
         public void AddItem(Product product, int quantity)
         {
             if (product == null) ArgumentNullException.ThrowIfNull(product);
