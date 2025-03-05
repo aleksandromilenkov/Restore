@@ -6,5 +6,7 @@ namespace RestoreAPI.DTOs
     {
         public required string CartId { get; set; } 
         public List<CartItemDTO> Items { get; set; } = new List<CartItemDTO>();
+        public string? ClientSecret { get; set; }
+        public string? PaymentIntentId { get; set; }
     }
 }

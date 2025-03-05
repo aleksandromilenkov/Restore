@@ -1,4 +1,5 @@
-﻿using RestoreAPI.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using RestoreAPI.DTOs;
 using RestoreAPI.Entites;
 
 namespace RestoreAPI.Extensions
@@ -10,6 +11,8 @@ namespace RestoreAPI.Extensions
             return new CartDTO()
             {
                 CartId = cart.CartId,
+                ClientSecret = cart.ClientSecret,
+                PaymentIntentId = cart.PaymentIntentId,
                 Items = cart.Items.Select(i => new CartItemDTO()
                 {
                     ProductId = i.ProductId,
@@ -18,9 +21,17 @@ namespace RestoreAPI.Extensions
                     Brand = i.Product.Brand,
                     Type = i.Product.Type,
                     PictureUrl = i.Product.PictureUrl,
-                    Quantity = i.Quantity
+                    Quantity = i.Quantity,
                 }).ToList()
             };
+        }
+
+        public static async Task<Cart?> GetCartWithItems(this IQueryable<Cart> query, string? cartId)
+        {
+            return await query
+                .Include(c => c.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(c => c.CartId == cartId);
         }
     }
 }

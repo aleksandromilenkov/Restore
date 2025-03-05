@@ -27,7 +27,7 @@ namespace RestoreAPI.Controllers
         public async Task<ActionResult<CartDTO>> AddItemToCart(int productId, int quantity)
         {
             // get the Cart from the DB
-            var cart = await RetrieveCart();
+            var cart = await _context.Carts.GetCartWithItems(Request.Cookies["cartId"]);
             // if no Cart then create the Cart
             cart ??= CreateCart();
             // get Product
@@ -45,7 +45,7 @@ namespace RestoreAPI.Controllers
         public async Task<ActionResult> RemoveCartItem(int productId, int quantity)
         {
             // get the Cart from the DB
-            var cart = await RetrieveCart();
+            var cart = await _context.Carts.GetCartWithItems(Request.Cookies["cartId"]);
             if(cart == null) return BadRequest("Unable to retreive the cart.");
             // remove the Item or reduce it's quantity
             cart.RemoveItem(productId, quantity);
@@ -66,15 +66,6 @@ namespace RestoreAPI.Controllers
             Response.Cookies.Append("cartId", cartId, cookieOptions);
             var cart = new Cart() { CartId = cartId };
             _context.Carts.Add(cart);
-            return cart;
-        }
-
-        private async Task<Cart?> RetrieveCart()
-        {
-            var cart = await _context.Carts
-               .Include(c => c.Items)
-               .ThenInclude(i => i.Product)
-               .FirstOrDefaultAsync(c => c.CartId == Request.Cookies["cartId"]);
             return cart;
         }
     }
