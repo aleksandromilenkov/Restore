@@ -1,11 +1,18 @@
-import { Typography } from "@mui/material"
+import { Grid2 } from "@mui/material"
+import OrderSummary from "../../app/shared/components/OrderSummary"
+import CheckoutStepper from "./CheckoutStepper"
 
 
 const CheckoutPage = () => {
   return (
-    <Typography variant="h3">
-        Only authorized users should be able to see this.
-    </Typography>
+    <Grid2 container spacing={2}>
+      <Grid2 size={8}>
+        <CheckoutStepper/>
+      </Grid2>
+      <Grid2 size={4}>
+        <OrderSummary/>
+      </Grid2>
+    </Grid2>
   )
 }
 export default CheckoutPage
