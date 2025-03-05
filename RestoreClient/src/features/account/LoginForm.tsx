@@ -1,13 +1,15 @@
 import { LockOutlined } from "@mui/icons-material"
 import { Box, Button, Container, Paper, TextField, Typography } from "@mui/material"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import {useForm} from "react-hook-form"
 import { loginSchema, LoginSchema } from "../../lib/schemas/loginSchema"
 import {zodResolver} from "@hookform/resolvers/zod";
-import { useLoginMutation } from "./accountApi"
+import { useLazyUserInfoQuery, useLoginMutation } from "./accountApi"
 
 const LoginForm = () => {
+    const location = useLocation();
     const navigate = useNavigate();
+    const [fetchUserInfo] = useLazyUserInfoQuery(); // does not fetch the data automatically like useUserInfoQuery unless you call the method
     const [login, {isLoading}] = useLoginMutation();
     const {register, handleSubmit, formState: {errors}} = useForm<LoginSchema>({
         mode: "onTouched", // validation will kick in if we just touch one field
@@ -16,7 +18,8 @@ const LoginForm = () => {
     const onSubmit = async (data: LoginSchema) => {
          try{
             await login(data).unwrap();
-            navigate("/catalog");
+            await fetchUserInfo();
+            navigate(location.state?.from || "/catalog");
          }catch(err){
             console.log(err);
          }

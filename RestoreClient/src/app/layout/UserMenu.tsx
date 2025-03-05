@@ -25,6 +25,8 @@ const UserMenu = ({user}:Props) => {
       <div>
         <Button
           onClick={handleClick}
+          size="large"
+          sx={{fontSize: "1.1rem"}}
         >
           {user.email}
         </Button>
