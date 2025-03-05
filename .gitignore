@@ -1,23 +1,39 @@
 # Build files
 bin/
+RestoreAPI/bin/
 obj/
+RestoreAPI/obj/
 
 # VS Code
 .vscode/
+RestoreClient/.vscode/
 
 # Visual Studio
 .vs/
+RestoreAPI/.vs/
 
 # User-specific files
 *.user
-*.suo
+RestoreClient/*.user
+RestoreAPI/*.user
+RestoreClient/*.suo
+RestoreAPI/*.suo
 
 # Logs
 logs/
+RestoreClient/logs/
+RestoreAPI/logs/
 *.log
+RestoreClient/*.log
+RestoreAPI/*.log
 
 # Package managers
 node_modules/
 appsettings.json
 appsettings.Development.json
 appsettings.Production.json
+
+RestoreClient/node_modules/
+RestoreAPI/appsettings.json
+RestoreAPI/appsettings.Development.json
+RestoreAPI/appsettings.Production.json
