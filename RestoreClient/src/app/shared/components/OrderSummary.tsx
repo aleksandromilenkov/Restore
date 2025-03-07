@@ -7,16 +7,13 @@ import {
   Paper,
 } from "@mui/material";
 import { currencyFormat } from "../../../lib/util";
-import { useFetchCartQuery } from "../../../features/cart/cartApi";
 import { Link, useLocation } from "react-router-dom";
+import { useCart } from "../../../lib/hooks/useCart";
 
 export default function OrderSummary() {
   const location = useLocation();
-  const { data, isLoading } = useFetchCartQuery();
-  const subtotal =
-    data?.items?.reduce((acc, val) => acc + val.price * val.quantity, 0) ?? 0;
-  const deliveryFee = subtotal / 100 > 100 ? 0 : 500;
-  if (isLoading) return <Typography>Loading...</Typography>;
+  const {isLoadingCart, subtotal, deliveryFee} = useCart();
+  if (isLoadingCart) return <Typography>Loading...</Typography>;
   return (
     <Box
       display="flex"
@@ -32,7 +29,7 @@ export default function OrderSummary() {
         <Typography variant="body2" sx={{ fontStyle: "italic" }}>
           Orders over $100 qualify for free delivery!
         </Typography>
-        
+
         <Box mt={2}>
           <Box display="flex" justifyContent="space-between" mb={1}>
             <Typography color="textSecondary">Subtotal</Typography>
