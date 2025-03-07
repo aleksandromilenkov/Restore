@@ -17,8 +17,7 @@ const UserMenu = ({user}:Props) => {
       setAnchorEl(null);
     };
   
-    const handleLogout = (e:unknown)=>{
-        console.log(e);
+    const handleLogout = ()=>{
         logout();
     }
     return (
