@@ -2,6 +2,7 @@ import { CheckBox } from "@mui/icons-material";
 import { Box, Button, FormControlLabel, Paper, Step, StepLabel, Stepper } from "@mui/material";
 import { AddressElement, PaymentElement } from "@stripe/react-stripe-js";
 import { useState } from "react"
+import Review from "./Review";
 
 const steps = ["Address", "Payment", "Review"];
 
@@ -41,7 +42,7 @@ const CheckoutStepper = () => {
                 <PaymentElement/>
             </Box>
             <Box sx={{display: activeStep === 2 ? "block" : "none"}}>
-                Review step
+                <Review/>
             </Box>
         </Box>
         <Box display="flex" paddingTop={2} justifyContent="space-between">
