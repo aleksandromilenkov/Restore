@@ -3,11 +3,14 @@ import { Box, Button, FormControlLabel, Paper, Step, StepLabel, Stepper } from "
 import { AddressElement, PaymentElement } from "@stripe/react-stripe-js";
 import { useState } from "react"
 import Review from "./Review";
+import { useFetchAddressQuery } from "../account/accountApi";
+import { Address } from "../../app/models/user";
 
 const steps = ["Address", "Payment", "Review"];
 
 const CheckoutStepper = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const {data: {name, ...rest} = {} as Address} = useFetchAddressQuery();
   const handleNext = ()=>{
     setActiveStep(prevState => prevState + 1);
   }
@@ -30,6 +33,10 @@ const CheckoutStepper = () => {
                 <AddressElement
                     options={{
                         mode: "shipping",
+                        defaultValues: {
+                            name: name,
+                            address: rest
+                        }
                     }}
                 />
                 <FormControlLabel
