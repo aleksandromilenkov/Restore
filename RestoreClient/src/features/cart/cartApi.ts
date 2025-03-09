@@ -5,6 +5,8 @@ import { CreateCartItem } from "../../app/models/createCartItem";
 import { CartItem } from "../../app/models/cartItem";
 import { DeleteCartItem } from "../../app/models/deleteCartItem";
 import { Product } from "../../app/models/product";
+import Cookies from "js-cookie";
+
 const isCartItem = (product: Product | CartItem): product is CartItem => {
   return (product as CartItem).quantity !== undefined;
 };
@@ -91,6 +93,15 @@ export const cartApi = createApi({
         }
       },
     }),
+    clearCart: builder.mutation<void, void>({
+      queryFn: () => ({data: undefined}),
+      onQueryStarted: async(_, {dispatch}) => {
+        dispatch(cartApi.util.updateQueryData('fetchCart', undefined, (draft) => {
+          draft.items = []
+        }));
+        Cookies.remove("cartId");
+      }
+    })
   }),
 });
 
@@ -98,4 +109,5 @@ export const {
   useFetchCartQuery,
   useAddItemToCartMutation,
   useRemoveItemFromCartMutation,
+  useClearCartMutation,
 } = cartApi;
