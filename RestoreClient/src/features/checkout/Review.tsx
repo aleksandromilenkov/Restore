@@ -1,9 +1,24 @@
 import { Box, Divider, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
-import { useFetchCartQuery } from "../cart/cartApi"
 import { currencyFormat } from "../../lib/util";
+import { ConfirmationToken } from "@stripe/stripe-js";
+import { useCart } from "../../lib/hooks/useCart";
 
-const Review = () => {
-    const {data: cart} = useFetchCartQuery();
+type Props = {
+    confirmationToken: ConfirmationToken | null;
+}
+
+const Review = ({confirmationToken}:Props) => {
+    const {cart} = useCart();
+    const addressString = () => {
+        if(!confirmationToken?.shipping) return "";
+        const {name, address} = confirmationToken.shipping;
+        return `${name}, ${address?.line1}, ${address?.city}, ${address?.state}, ${address?.postal_code}, ${address?.country}`;
+    }
+    const paymentString = () => {
+        if(!confirmationToken?.payment_method_preview.card) return "";
+        const {card} = confirmationToken.payment_method_preview;
+        return `${card.brand.toUpperCase()}, **** **** **** ${card.last4}, Exp: ${card.exp_month}/${card.exp_year}`;
+    }
   return (
     <div>
         <Box mt={4} width="100%">
@@ -15,13 +30,13 @@ const Review = () => {
                     Shipping address
                 </Typography>
                 <Typography component="dd" mt={1} color="textSecondary">
-                    address goes here
+                   {addressString()}
                 </Typography>
                 <Typography component="dt" fontWeight="medium">
                     Payment details
                 </Typography>
                 <Typography component="dd" mt={1} color="textSecondary">
-                    Payment details goes here
+                    {paymentString()}
                 </Typography>
             </dl>
         </Box>
