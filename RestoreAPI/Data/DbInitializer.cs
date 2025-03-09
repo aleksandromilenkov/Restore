@@ -19,7 +19,7 @@ namespace RestoreAPI.Data
 
         private static async void SeedData(StoreContext context, UserManager<User> userManager)
         {
-            // this will always be called Database.Migrate(): 
+            // this will always be called
             context.Database.Migrate(); // if doesn't have the DB it will create the DB and apply all the pending migrations
 
             if (!userManager.Users.Any()) {

@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RestoreAPI.Entites;
+using RestoreAPI.Entites.OrderAggregate;
 
 namespace RestoreAPI.Data
 {
     public class StoreContext(DbContextOptions options) : IdentityDbContext<User>(options)
     {
         public required DbSet<Product> Products { get; set; }
-        public DbSet<Cart> Carts { get; set; }
+        public required DbSet<Cart> Carts { get; set; }
+        public required DbSet<Order> Orders { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
