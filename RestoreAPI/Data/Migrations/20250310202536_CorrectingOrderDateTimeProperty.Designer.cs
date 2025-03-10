@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestoreAPI.Data;
 
@@ -10,9 +11,11 @@ using RestoreAPI.Data;
 namespace RestoreAPI.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20250310202536_CorrectingOrderDateTimeProperty")]
+    partial class CorrectingOrderDateTimeProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
@@ -266,7 +269,6 @@ namespace RestoreAPI.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PaymentIntentId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<long>("Subtotal")
@@ -296,7 +298,7 @@ namespace RestoreAPI.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItem");
                 });
 
             modelBuilder.Entity("RestoreAPI.Entites.Product", b =>
@@ -482,9 +484,8 @@ namespace RestoreAPI.Data.Migrations
                             b1.Property<int>("OrderId")
                                 .HasColumnType("INTEGER");
 
-                            b1.Property<string>("Brand")
-                                .IsRequired()
-                                .HasColumnType("TEXT");
+                            b1.Property<int>("Brand")
+                                .HasColumnType("INTEGER");
 
                             b1.Property<int>("ExpMonth")
                                 .HasColumnType("INTEGER");
@@ -575,7 +576,7 @@ namespace RestoreAPI.Data.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItems");
+                            b1.ToTable("OrderItem");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
