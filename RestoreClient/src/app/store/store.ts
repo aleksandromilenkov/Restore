@@ -7,6 +7,7 @@ import { cartApi } from "../../features/cart/cartApi";
 import { catalogSlice } from "../../features/catalog/catalogSlice";
 import { accountApi } from "../../features/account/accountApi";
 import { checkoutApi } from "../../features/checkout/checkoutApi";
+import { orderApi } from "../../features/orders/orderApi";
 
 export const store = configureStore({
     reducer:{
@@ -14,6 +15,7 @@ export const store = configureStore({
         [cartApi.reducerPath]: cartApi.reducer,
         [accountApi.reducerPath]: accountApi.reducer,
         [checkoutApi.reducerPath]: checkoutApi.reducer,
+        [orderApi.reducerPath]: orderApi.reducer,
         ui: uiSlice.reducer,
         [errorApi.reducerPath]: errorApi.reducer,
         catalogSlice: catalogSlice.reducer,
@@ -25,6 +27,7 @@ export const store = configureStore({
             cartApi.middleware,
             accountApi.middleware,
             checkoutApi.middleware,
+            orderApi.middleware,
             errorApi.middleware
         )// Add api middleware for caching and automaticaly refetching
 })

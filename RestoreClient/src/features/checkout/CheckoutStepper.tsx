@@ -10,6 +10,7 @@ import { currencyFormat } from "../../lib/util";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import {LoadingButton} from "@mui/lab"
+import { useCreateOrderMutation } from "../orders/orderApi";
 
 const steps = ["Address", "Payment", "Review"];
 
@@ -17,6 +18,7 @@ const CheckoutStepper = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const {data: {name, ...rest} = {} as Address, isLoading} = useFetchAddressQuery();
+  const [createOrder] = useCreateOrderMutation();
   const [updateAddress] = useUpdateUserAddressMutation();
   const [saveAddressChecked, setSaveAddressChecked] = useState(false);
   const elements = useElements();
@@ -39,6 +41,8 @@ const CheckoutStepper = () => {
     setSubmitting(true);
     try{
         if (!confirmationToken || !cart?.clientSecret) throw new Error("Unable to process payment");
+        const orderModel = await createOrderModel();
+        const orderResult = await createOrder(orderModel);
         const paymentResult = await stripe?.confirmPayment({
             clientSecret: cart.clientSecret,
             redirect: 'if_required',
@@ -46,7 +50,7 @@ const CheckoutStepper = () => {
                 confirmation_token: confirmationToken.id
             }});
         if (paymentResult?.paymentIntent?.status === 'succeeded'){
-            navigate("/checkout/success");
+            navigate("/checkout/success", {state: orderResult});
             clearCart();
         } else if (paymentResult?.error) {
             throw new Error(paymentResult.error.message);
@@ -61,6 +65,16 @@ const CheckoutStepper = () => {
     }
     finally {
         setSubmitting(false);
+    }
+  }
+
+  const createOrderModel = async()=>{
+    const shippingAddress = await getStripeAddress();
+    const paymentSummary = confirmationToken?.payment_method_preview.card;
+    if(!shippingAddress || !paymentSummary) throw new Error("Problem creating order.");
+    return {
+        shippingAddress: shippingAddress,
+        paymentSummary: paymentSummary
     }
   }
 

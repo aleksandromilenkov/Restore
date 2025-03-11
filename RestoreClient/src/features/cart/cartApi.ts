@@ -97,7 +97,8 @@ export const cartApi = createApi({
       queryFn: () => ({data: undefined}),
       onQueryStarted: async(_, {dispatch}) => {
         dispatch(cartApi.util.updateQueryData('fetchCart', undefined, (draft) => {
-          draft.items = []
+          draft.items = [];
+          draft.id = "";
         }));
         Cookies.remove("cartId");
       }
