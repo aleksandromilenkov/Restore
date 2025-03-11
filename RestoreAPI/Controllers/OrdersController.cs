@@ -13,16 +13,22 @@ namespace RestoreAPI.Controllers
     public class OrdersController(StoreContext _context) : BaseApiController
     {
         [HttpGet]
-        public async Task<ActionResult<List<Order>>> GetOrders()
+        public async Task<ActionResult<List<OrderDTO>>> GetOrders()
         {
-            var orders = await _context.Orders.Include(o => o.OrderItems).Where(o => o.BuyerEmail == User.GetUserName()).ToListAsync();
+            var orders = await _context.Orders
+                .ProjectToDTO()
+                .Where(o => o.BuyerEmail == User.GetUserName())
+                .ToListAsync();
             return orders;
         }
 
         [HttpGet("{id:int}", Name ="GetOrder")]
-        public async Task<ActionResult<Order>> GetOrderDetails(int id)
+        public async Task<ActionResult<OrderDTO>> GetOrderDetails(int id)
         {
-            var order = await _context.Orders.Where(o => o.BuyerEmail == User.GetUserName() && o.Id == id).Include(o => o.OrderItems).FirstOrDefaultAsync();
+            var order = await _context.Orders
+                .ProjectToDTO()
+                .Where(o => o.BuyerEmail == User.GetUserName() && o.Id == id)
+                .FirstOrDefaultAsync();
             if (order == null) return NotFound();
             return order;
         }
@@ -52,7 +58,7 @@ namespace RestoreAPI.Controllers
             _context.Carts.Remove(cart);
             Response.Cookies.Delete("cartId");
             var result = await _context.SaveChangesAsync() > 0;
-            return result ? CreatedAtAction(nameof(GetOrderDetails), new {id = order.Id}, order) : BadRequest("Cannot create order");
+            return result ? CreatedAtAction(nameof(GetOrderDetails), new {id = order.Id}, order.ToOrderDTO()) : BadRequest("Cannot create order");
         }
 
         private List<OrderItem>? CreateOrderItems(List<CartItem> items)
