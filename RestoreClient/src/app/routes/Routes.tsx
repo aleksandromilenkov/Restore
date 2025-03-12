@@ -13,6 +13,7 @@ import LoginForm from "../../features/account/LoginForm";
 import RegisterForm from "../../features/account/RegisterForm";
 import RequireAuth from "./RequireAuth";
 import CheckoutSuccess from "../../features/checkout/CheckoutSuccess";
+import OrdersPage from "../../features/orders/OrdersPage";
 
 export const router = createBrowserRouter([
     {
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
             {
               path: "checkout/success",
               element: <CheckoutSuccess/>
+            },
+            {
+              path: "orders",
+              element: <OrdersPage/>
             }
           ]},
           {
