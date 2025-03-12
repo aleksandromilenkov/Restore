@@ -43,20 +43,25 @@ namespace RestoreAPI.Controllers
             if (items == null) return BadRequest("Some items out of stock");
             var subtotal = items.Sum(i => i.Price * i.Quantity);
             var deliveryFee = CalculateDeliveryFee(subtotal);
-            var order = new Order()
+            var order = await _context.Orders.Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.PaymentIntentId == cart.PaymentIntentId);
+            if (order == null)
             {
-                BuyerEmail = User.GetUserName(),
-                OrderItems = items,
-                ShippingAddress = createOrderDto.ShippingAddress,
-                PaymentSummary = createOrderDto.PaymentSummary,
-                Subtotal = subtotal,
-                DeliveryFee = deliveryFee,
-                Discount = 0,
-                PaymentIntentId = cart.PaymentIntentId,
-            };
-            await _context.Orders.AddAsync(order);
-            _context.Carts.Remove(cart);
-            Response.Cookies.Delete("cartId");
+                order = new Order()
+                {
+                    BuyerEmail = User.GetUserName(),
+                    OrderItems = items,
+                    ShippingAddress = createOrderDto.ShippingAddress,
+                    PaymentSummary = createOrderDto.PaymentSummary,
+                    Subtotal = subtotal,
+                    DeliveryFee = deliveryFee,
+                    Discount = 0,
+                    PaymentIntentId = cart.PaymentIntentId,
+                };
+                await _context.Orders.AddAsync(order);
+            } else {
+                order.OrderItems = items;
+            }
             var result = await _context.SaveChangesAsync() > 0;
             return result ? CreatedAtAction(nameof(GetOrderDetails), new {id = order.Id}, order.ToOrderDTO()) : BadRequest("Cannot create order");
         }
