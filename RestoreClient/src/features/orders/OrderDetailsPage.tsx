@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { format } from "date-fns";
-import { currencyFormat } from "../../lib/util";
+import { currencyFormat, formatAddressString, formatPaymentString } from "../../lib/util";
 
 const OrderDetailsPage = () => {
   const { id } = useParams();
@@ -40,7 +40,7 @@ const OrderDetailsPage = () => {
             Shipping address
           </Typography>
           <Typography component="dd" variant="body2" fontWeight="300">
-            Address goes here
+            {formatAddressString(order.shippingAddress)}
           </Typography>
         </Box>
         <Box component="dl">
@@ -48,7 +48,7 @@ const OrderDetailsPage = () => {
             Payment info
           </Typography>
           <Typography component="dd" variant="body2" fontWeight="300">
-            Payment goes here
+            {formatPaymentString(order.paymentSummary)}
           </Typography>
         </Box>
       </Box>

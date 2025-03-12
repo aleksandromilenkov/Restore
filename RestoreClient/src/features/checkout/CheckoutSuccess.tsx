@@ -1,25 +1,12 @@
 import { Box, Button, Container, Divider, Paper, Typography } from "@mui/material"
 import { Link, useLocation } from "react-router-dom"
 import { Order } from "../../app/models/order";
-import { currencyFormat } from "../../lib/util";
+import { currencyFormat, formatAddressString, formatPaymentString } from "../../lib/util";
 
 const CheckoutSuccess = () => {
   const {state} = useLocation();
   const order = state.data as Order;
   if(!order) return <Typography>Problem accessing the order</Typography>
-
-  const addressString = () =>{
-    const address = order.shippingAddress;
-    return `${address?.name}, ${address?.line1}, ${address?.city}, ${address?.state},
-            ${address?.postal_code}, ${address?.country}`;
-  }
-
-  const paymentString = () =>{
-    const card = order.paymentSummary;
-    return `${card?.brand.toUpperCase()}, **** **** **** ${card?.last4},
-            Exp: ${card?.exp_month}/${card?.exp_year}`;
-  }
-
   return (
     <Container maxWidth="md">
       <>
@@ -44,7 +31,7 @@ const CheckoutSuccess = () => {
               Payment method
             </Typography>
             <Typography variant="body2" fontWeight="bold">
-              {paymentString()}
+              {formatPaymentString(order.paymentSummary)}
             </Typography>
           </Box>
           <Divider/>
@@ -53,7 +40,7 @@ const CheckoutSuccess = () => {
               Shipping address
             </Typography>
             <Typography variant="body2" fontWeight="bold">
-              {addressString()}
+              {formatAddressString(order.shippingAddress)}
             </Typography>
           </Box>
           <Divider/>
