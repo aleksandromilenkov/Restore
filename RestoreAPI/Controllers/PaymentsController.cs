@@ -11,7 +11,7 @@ using Stripe;
 namespace RestoreAPI.Controllers
 {
     public class PaymentsController(PaymentsService paymentsService,
-        StoreContext context, IConfiguration config, ILogger logger) : BaseApiController
+        StoreContext context, IConfiguration config, ILogger<PaymentsController> logger) : BaseApiController
     {
         [Authorize]
         [HttpPost]

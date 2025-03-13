@@ -8,7 +8,8 @@ export const orderApi = createApi({
     tagTypes: ["Orders"],
     endpoints: (builder) => ({
         fetchOrders: builder.query<Order[], void>({
-            query: ()=> "orders"
+            query: ()=> "orders",
+            providesTags: ["Orders"],
         }),
         fetchOrderDetails: builder.query<Order, number>({
             query: (id) => `orders/${id}`

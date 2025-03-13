@@ -22,8 +22,9 @@ builder.Services.AddIdentityApiEndpoints<User>(options =>
     options.User.RequireUniqueEmail = true;
 }).AddRoles<IdentityRole>()
   .AddEntityFrameworkStores<StoreContext>();
-    
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
