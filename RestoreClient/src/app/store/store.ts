@@ -2,7 +2,6 @@ import { configureStore} from "@reduxjs/toolkit"
 import { useDispatch, useSelector } from "react-redux";
 import { catalogApi } from "../../features/catalog/catalogApi";
 import { uiSlice } from "../layout/uiSlice";
-import { errorApi } from "../../features/about/ErrorApi";
 import { cartApi } from "../../features/cart/cartApi";
 import { catalogSlice } from "../../features/catalog/catalogSlice";
 import { accountApi } from "../../features/account/accountApi";
@@ -17,7 +16,6 @@ export const store = configureStore({
         [checkoutApi.reducerPath]: checkoutApi.reducer,
         [orderApi.reducerPath]: orderApi.reducer,
         ui: uiSlice.reducer,
-        [errorApi.reducerPath]: errorApi.reducer,
         catalogSlice: catalogSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -28,7 +26,6 @@ export const store = configureStore({
             accountApi.middleware,
             checkoutApi.middleware,
             orderApi.middleware,
-            errorApi.middleware
         )// Add api middleware for caching and automaticaly refetching
 })
 

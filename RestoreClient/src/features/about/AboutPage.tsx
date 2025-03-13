@@ -1,91 +1,46 @@
-import {
-  Alert,
-  AlertTitle,
-  Button,
-  ButtonGroup,
-  Container,
-  List,
-  ListItem,
-  Typography,
-} from "@mui/material";
-import {
-  useLazyGet400ErrorQuery,
-  useLazyGet401ErrorQuery,
-  useLazyGet404ErrorQuery,
-  useLazyGet500ErrorQuery,
-  useLazyGetValidationErrorQuery,
-} from "./ErrorApi";
-import { useState } from "react";
+import { Container, Typography, Box, Card, CardContent } from "@mui/material";
 
 const AboutPage = () => {
-  const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const [trigger400Error] = useLazyGet400ErrorQuery();
-  const [trigger401Error] = useLazyGet401ErrorQuery();
-  const [trigger404Error] = useLazyGet404ErrorQuery();
-  const [trigger500Error] = useLazyGet500ErrorQuery();
-  const [triggerValidationError] = useLazyGetValidationErrorQuery();
-
-  const getValidationError = async () => {
-    try {
-      await triggerValidationError().unwrap();
-    } catch (error: unknown) {
-      if (
-        error &&
-        typeof error === "object" &&
-        "message" in error &&
-        typeof (error as { message: string }).message === "string"
-      ) {
-        const errorArray = (error as { message: string }).message.split(", ");
-        console.log(errorArray);
-        setValidationErrors(errorArray);
-      }
-    }
-  };
   return (
-    <Container maxWidth="lg">
-      <Typography gutterBottom variant="h3">
-        Errors for testing
-      </Typography>
-      <ButtonGroup fullWidth>
-        <Button
-          variant="contained"
-          onClick={() => trigger400Error().catch((err) => console.log(err))}
-        >
-          Test 400 Error
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => trigger401Error().catch((err) => console.log(err))}
-        >
-          Test 401 Error
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => trigger404Error().catch((err) => console.log(err))}
-        >
-          Test 404 Error
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => trigger500Error().catch((err) => console.log(err))}
-        >
-          Test 500 Error
-        </Button>
-        <Button variant="contained" onClick={getValidationError}>
-          Test Validation Error
-        </Button>
-      </ButtonGroup>
-      {validationErrors.length > 0 && (
-        <Alert severity="error">
-          <AlertTitle>Validation errors</AlertTitle>
-          <List>
-            {validationErrors.map((err) => (
-              <ListItem key={err}>{err}</ListItem>
-            ))}
-          </List>
-        </Alert>
-      )}
+    <Container maxWidth="md" sx={{pb:"10px"}}>
+      <Box textAlign="center" my={4} >
+        <Typography variant="h3" fontWeight="bold" gutterBottom>
+          About Us
+        </Typography>
+        <Typography variant="subtitle1" color="textSecondary">
+          Your ultimate destination for premium winter sports gear.
+        </Typography>
+      </Box>
+
+      <Card sx={{ mb: 4, boxShadow: 3 }}>
+        <CardContent>
+          <Typography variant="h5" fontWeight="bold" gutterBottom>
+            Who We Are
+          </Typography>
+          <Typography variant="body1" color="textSecondary">
+            At ReStore, we specialize in top-quality winter sports
+            equipment, offering a curated selection of snowboards, jackets,
+            hats, and accessories. Whether you're a seasoned pro or just
+            starting out, we have everything you need for an unforgettable ride.
+          </Typography>
+        </CardContent>
+      </Card>
+
+      <Card sx={{ mb: 4, boxShadow: 3 }}>
+        <CardContent>
+          <Typography variant="h5" fontWeight="bold" gutterBottom>
+            Our Mission
+          </Typography>
+          <Typography variant="body1" color="textSecondary">
+            We are passionate about winter sports and committed to providing
+            high-performance gear that enhances your experience on the slopes.
+            Our products are handpicked for their durability, comfort, and
+            cutting-edge technology.
+          </Typography>
+        </CardContent>
+      </Card>
     </Container>
   );
 };
+
 export default AboutPage;
