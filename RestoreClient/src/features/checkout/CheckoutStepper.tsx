@@ -3,7 +3,6 @@ import { AddressElement, PaymentElement, useElements, useStripe } from "@stripe/
 import { useState } from "react"
 import Review from "./Review";
 import { useFetchAddressQuery, useUpdateUserAddressMutation } from "../account/accountApi";
-import { Address } from "../../app/models/user";
 import { ConfirmationToken, StripeAddressElementChangeEvent, StripePaymentElementChangeEvent } from "@stripe/stripe-js";
 import { useCart } from "../../lib/hooks/useCart";
 import { currencyFormat } from "../../lib/util";
@@ -17,7 +16,7 @@ const steps = ["Address", "Payment", "Review"];
 const CheckoutStepper = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
-  const {data: {name, ...rest} = {} as Address, isLoading} = useFetchAddressQuery();
+  const {data, isLoading} = useFetchAddressQuery();
   const [createOrder] = useCreateOrderMutation();
   const [updateAddress] = useUpdateUserAddressMutation();
   const [saveAddressChecked, setSaveAddressChecked] = useState(false);
@@ -28,6 +27,11 @@ const CheckoutStepper = () => {
   const [submitting, setSubmitting] = useState(false);
   const [confirmationToken, setConfirmationToken] = useState<ConfirmationToken | null>(null);
   const {total, cart, clearCart} = useCart();
+
+  let name, restAddress;
+  if(data){
+    ({name, ...restAddress} = data);
+  }
 
   const getStripeAddress = async()=>{
     const addressElement = elements?.getElement("address");
@@ -129,7 +133,7 @@ const CheckoutStepper = () => {
                         mode: "shipping",
                         defaultValues: {
                             name: name,
-                            address: rest
+                            address: restAddress
                         }
                     }}
                     onChange={handleAddressChange}

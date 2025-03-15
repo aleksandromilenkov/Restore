@@ -8,7 +8,7 @@ export function filterEmptyValues(values: object) {
   return Object.fromEntries(
     Object.entries(values).filter(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ([key, value])=> value !== "" && value !== null
+      ([_, value])=> value !== "" && value !== null
       && value !== undefined && value.length !== 0
     )
   )
