@@ -37,3 +37,4 @@ RestoreClient/node_modules/
 RestoreAPI/appsettings.json
 RestoreAPI/appsettings.Development.json
 RestoreAPI/appsettings.Production.json
+RestoreClient/.env.production
