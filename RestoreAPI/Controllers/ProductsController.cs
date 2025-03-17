@@ -7,10 +7,11 @@ using RestoreAPI.DTOs;
 using RestoreAPI.Entites;
 using RestoreAPI.Extensions;
 using RestoreAPI.RequestHelpers;
+using RestoreAPI.Services;
 
 namespace RestoreAPI.Controllers
 {
-    public class ProductsController(StoreContext _context, IMapper _mapper) : BaseApiController
+    public class ProductsController(StoreContext _context, IMapper _mapper, ImageService _imageService) : BaseApiController
     {
         [HttpGet]
         [ProducesResponseType(typeof(Product), 200)]
@@ -45,9 +46,19 @@ namespace RestoreAPI.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct([FromBody] CreateProductDTO createProductDTO)
+        public async Task<ActionResult<Product>> CreateProduct(CreateProductDTO createProductDTO)
         {
             var product = _mapper.Map<Product>(createProductDTO);
+            if(createProductDTO.File != null)
+            {
+                var imageResult = await _imageService.AddImageAsync(createProductDTO.File);
+                if(imageResult.Error != null)
+                {
+                    return BadRequest(imageResult.Error.Message);
+                }
+                product.PictureUrl = imageResult.SecureUrl.AbsoluteUri;
+                product.PublicId = imageResult.PublicId;
+            }
             _context.Products.Add(product);
             var result = await _context.SaveChangesAsync() > 0;
             return result ? CreatedAtAction(nameof(GetProductById), new { Id = product.Id }, product) : BadRequest("Problem creating new Product");
