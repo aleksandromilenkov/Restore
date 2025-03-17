@@ -39,3 +39,4 @@ RestoreAPI/appsettings.Development.json
 RestoreAPI/appsettings.Production.json
 RestoreClient/.env.production
 RestoreAPI/wwwroot
+RestoreAPI/appsettings.json
