@@ -46,7 +46,7 @@ namespace RestoreAPI.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProduct(CreateProductDTO createProductDTO)
+        public async Task<ActionResult<Product>> CreateProduct([FromForm]CreateProductDTO createProductDTO)
         {
             var product = _mapper.Map<Product>(createProductDTO);
             if(createProductDTO.File != null)
@@ -66,11 +66,25 @@ namespace RestoreAPI.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut]
-        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductDTO updateProductDTO)
+        public async Task<IActionResult> UpdateProduct([FromForm] UpdateProductDTO updateProductDTO)
         {
             var product = await _context.Products.FindAsync(updateProductDTO.Id);
             if (product == null) return NotFound();
             _mapper.Map(updateProductDTO, product); // mapping from dto to the tracking product from the DB
+            if (updateProductDTO.File != null)
+            {
+                var imageResult = await _imageService.AddImageAsync(updateProductDTO.File);
+                if (imageResult.Error != null)
+                {
+                    return BadRequest($"Error {imageResult.Error.Message}");
+                }
+                if (!string.IsNullOrEmpty(product.PublicId))
+                {
+                    await _imageService.DeleteImageAsync(product.PublicId);
+                }
+                product.PictureUrl = imageResult.SecureUrl.AbsoluteUri;
+                product.PublicId = imageResult.PublicId;
+            }
             var result = await _context.SaveChangesAsync() > 0;
             return result ? NoContent() : BadRequest("Problem updating product");
         }
@@ -81,6 +95,10 @@ namespace RestoreAPI.Controllers
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null) return NotFound();
+            if (!string.IsNullOrEmpty(product.PublicId))
+            {
+                await _imageService.DeleteImageAsync(product.PublicId);
+            }
             _context.Products.Remove(product);
             var result = await _context.SaveChangesAsync() > 0;
             return result ? NoContent() : BadRequest("Problem removing product");
