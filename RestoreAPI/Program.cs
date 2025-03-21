@@ -3,12 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using RestoreAPI.Data;
 using RestoreAPI.Entites;
 using RestoreAPI.Middleware;
+using RestoreAPI.RequestHelpers;
 using RestoreAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddControllers();
 builder.Services.AddDbContext<StoreContext>(options =>
 {
@@ -18,6 +19,7 @@ builder.Services.AddCors();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddTransient<ExceptionMiddleware>();
 builder.Services.AddScoped<PaymentsService>();
+builder.Services.AddScoped<ImageService>();
 builder.Services.AddIdentityApiEndpoints<User>(options =>
 {
     options.User.RequireUniqueEmail = true;
