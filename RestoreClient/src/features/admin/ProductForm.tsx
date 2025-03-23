@@ -6,14 +6,22 @@ import AppTextInput from "../../app/shared/components/AppTextInput";
 import { useFetchFiltersQuery } from "../catalog/catalogApi";
 import AppSelectInput from "../../app/shared/components/AppSelectInput";
 import AppDropzone from "../../app/shared/components/AppDropzone";
-
-const ProductForm = () => {
-    const {control, handleSubmit, watch} = useForm<CreateProductChema>({
+import { Product } from "../../app/models/product";
+import { useEffect } from "react";
+type Props = {
+    product: Product | null
+}
+const ProductForm = ({product}:Props) => {
+    const {control, handleSubmit, watch, reset} = useForm<CreateProductChema>({
         mode:"onTouched",
         resolver: zodResolver(createProductSchema)
     });
     const watchFile = watch("file");
     const {data} = useFetchFiltersQuery();
+
+    useEffect(()=>{
+        if(product) reset(product);
+    }, [product, reset])
 
     const onSubmit = (data: CreateProductChema)=>{
         console.log(data);
@@ -45,9 +53,14 @@ const ProductForm = () => {
                 </Grid2>
                 <Grid2 size={12} display="flex" justifyContent="space-between" alignItems="center">
                    <AppDropzone name="file" control={control}/>
-                   {watchFile && (
+                   {watchFile
+                    ? (
                     <img src={watchFile.preview} alt="preview of dropped image" style={{maxHeight:200}}/>
-                   )}
+                   ) 
+                   : product
+                     ? <img src={product?.pictureUrl} alt="preview of dropped image" style={{maxHeight:200}}/>
+                     : ""
+                     }
                 </Grid2>
             </Grid2>
             <Box display="flex" justifyContent="space-between" sx={{mt:3}}>
