@@ -5,12 +5,14 @@ import { Box, Button, Grid2, Paper, Typography } from "@mui/material";
 import AppTextInput from "../../app/shared/components/AppTextInput";
 import { useFetchFiltersQuery } from "../catalog/catalogApi";
 import AppSelectInput from "../../app/shared/components/AppSelectInput";
+import AppDropzone from "../../app/shared/components/AppDropzone";
 
 const ProductForm = () => {
-    const {control, handleSubmit} = useForm<CreateProductChema>({
-        // mode:"onTouched",
+    const {control, handleSubmit, watch} = useForm<CreateProductChema>({
+        mode:"onTouched",
         resolver: zodResolver(createProductSchema)
     });
+    const watchFile = watch("file");
     const {data} = useFetchFiltersQuery();
 
     const onSubmit = (data: CreateProductChema)=>{
@@ -41,8 +43,11 @@ const ProductForm = () => {
                 <Grid2 size={12}>
                    <AppTextInput control={control} name="description" label="Description" multiline rows={4}/>
                 </Grid2>
-                <Grid2 size={12}>
-                   <AppTextInput control={control} name="file" label="Image"/>
+                <Grid2 size={12} display="flex" justifyContent="space-between" alignItems="center">
+                   <AppDropzone name="file" control={control}/>
+                   {watchFile && (
+                    <img src={watchFile.preview} alt="preview of dropped image" style={{maxHeight:200}}/>
+                   )}
                 </Grid2>
             </Grid2>
             <Box display="flex" justifyContent="space-between" sx={{mt:3}}>
