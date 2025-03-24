@@ -1,5 +1,5 @@
-import { useForm } from "react-hook-form"
-import { CreateProductChema, createProductSchema } from "../../lib/schemas/createProductSchema";
+import { FieldValues, useForm } from "react-hook-form"
+import { CreateProductSchema, createProductSchema } from "../../lib/schemas/createProductSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Button, Grid2, Paper, Typography } from "@mui/material";
 import AppTextInput from "../../app/shared/components/AppTextInput";
@@ -8,23 +8,55 @@ import AppSelectInput from "../../app/shared/components/AppSelectInput";
 import AppDropzone from "../../app/shared/components/AppDropzone";
 import { Product } from "../../app/models/product";
 import { useEffect } from "react";
+import { useCreateProductMutation, useUpdateProductMutation } from "./adminApi";
+import { LoadingButton } from "@mui/lab";
+import { handleApiError } from "../../lib/util";
 type Props = {
-    product: Product | null
+    product: Product | null,
+    setEditMode: (value:boolean)=>void,
+    setProduct: (value:Product | null)=>void,
+    refetch: ()=>void;
 }
-const ProductForm = ({product}:Props) => {
-    const {control, handleSubmit, watch, reset} = useForm<CreateProductChema>({
+const ProductForm = ({product, setEditMode, setProduct, refetch}:Props) => {
+    const {control, handleSubmit, watch, reset, setError, formState: {isSubmitting}} = useForm<CreateProductSchema>({
         mode:"onTouched",
         resolver: zodResolver(createProductSchema)
     });
     const watchFile = watch("file");
     const {data} = useFetchFiltersQuery();
-
+    const [createProduct] = useCreateProductMutation();
+    const [updateProduct] = useUpdateProductMutation();
+    console.log(refetch);
     useEffect(()=>{
         if(product) reset(product);
-    }, [product, reset])
+        return ()=>{
+            if(watchFile) URL.revokeObjectURL(watchFile.preview) // remove the object from memory
+        }
+    }, [product, reset, watchFile])
 
-    const onSubmit = (data: CreateProductChema)=>{
+    const createFormData = (items: FieldValues) =>{
+        const formData = new FormData();
+        for(const key in items){
+            formData.append(key, items[key]);
+        }
+        return formData;
+    }
+
+    const onSubmit = async (data: CreateProductSchema)=>{
         console.log(data);
+        try{
+            const formData = createFormData(data);
+            if(watchFile) formData.append("file", watchFile);
+            
+            if(product) await updateProduct({id: product.id, product: formData}).unwrap();
+            else await createProduct(formData).unwrap();
+            setEditMode(false);
+            setProduct(null);
+            refetch();
+        }catch(error){
+            console.log(error);
+            handleApiError<CreateProductSchema>(error, setError, ['brand', 'description', 'file', 'name', 'pictureUrl', 'price', 'quantityInStock', 'type'])
+        }
     }
   return (
     <Box component={Paper} sx={{p:4, maxWidth: 'lg', mx:"auto"}}>
@@ -64,8 +96,15 @@ const ProductForm = ({product}:Props) => {
                 </Grid2>
             </Grid2>
             <Box display="flex" justifyContent="space-between" sx={{mt:3}}>
-                <Button variant="contained" color="inherit">Cancel</Button>
-                <Button variant="contained" color="success" type="submit">Submit</Button>
+                <Button variant="contained" color="inherit" onClick={()=>{
+                    setEditMode(false)
+                    setProduct(null);
+                }}>Cancel</Button>
+                <LoadingButton
+                  loading= {isSubmitting}
+                  variant="contained" color="success" type="submit">
+                    Submit
+                  </LoadingButton>
             </Box>
         </form>
     </Box>

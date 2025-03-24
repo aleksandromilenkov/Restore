@@ -17,4 +17,4 @@ export const createProductSchema = z.object({
     file: fileSchema.optional()
 }).refine((data)=> data.pictureUrl || data.file, {message:"Please provide an image", path: ['file']} )
 
-export type CreateProductChema = z.infer<typeof createProductSchema>;
+export type CreateProductSchema = z.infer<typeof createProductSchema>;

@@ -11,11 +11,18 @@ import { Product } from "../../app/models/product";
 
 const InventoryPage = () => {
     const params = useAppSelector(state => state.catalogSlice);
-    const {data} = useFetchProductsQuery(params);
+    const {data, refetch} = useFetchProductsQuery(params);
     const dispatch = useAppDispatch();
     const [editMode, setEditMode] = useState(false);
     const [productToEdit, setProductToEdit] = useState<Product | null>(null);
-    if(editMode) return <ProductForm product={productToEdit}/>
+    if(editMode) return(
+        <ProductForm
+        product={productToEdit}
+        setEditMode={setEditMode}
+        refetch={refetch}
+        setProduct={setProductToEdit}
+        />
+    )
     return (
         <> 
         <Box display="flex" justifyContent="space-between">
