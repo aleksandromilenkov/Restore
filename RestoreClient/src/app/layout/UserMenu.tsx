@@ -52,12 +52,14 @@ const UserMenu = ({user}:Props) => {
             </ListItemIcon>
             <ListItemText>My Orders</ListItemText>
           </MenuItem>
+          {user.roles.includes("Admin") &&
           <MenuItem component={Link} to="/inventory">
             <ListItemIcon>
                 <Inventory/>
             </ListItemIcon>
             <ListItemText>Inventory</ListItemText>
           </MenuItem>
+          }
           <MenuItem onClick={handleLogout}>
             <ListItemIcon>
                 <Logout/>

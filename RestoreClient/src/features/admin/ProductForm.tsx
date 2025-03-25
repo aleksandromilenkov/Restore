@@ -34,10 +34,10 @@ const ProductForm = ({product, setEditMode, setProduct, refetch}:Props) => {
         }
     }, [product, reset, watchFile])
 
-    const createFormData = (items: FieldValues) =>{
+    const createFormData = (item: FieldValues) =>{
         const formData = new FormData();
-        for(const key in items){
-            formData.append(key, items[key]);
+        for(const key in item){
+            formData.append(key, item[key]);
         }
         return formData;
     }
@@ -47,7 +47,7 @@ const ProductForm = ({product, setEditMode, setProduct, refetch}:Props) => {
         try{
             const formData = createFormData(data);
             if(watchFile) formData.append("file", watchFile);
-            
+
             if(product) await updateProduct({id: product.id, product: formData}).unwrap();
             else await createProduct(formData).unwrap();
             setEditMode(false);

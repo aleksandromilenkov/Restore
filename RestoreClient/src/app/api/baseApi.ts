@@ -41,14 +41,18 @@ export const baseQueryWithErrorHandling = async (
         if(typeof responseData === 'object' && 'title' in responseData) // for typescript complainning
         toast.error(responseData.title);
         break;
-        case 404:
-          if(typeof responseData === 'object' && 'title' in responseData)
-            router.navigate('/not-found', {state: {error: responseData}})
-          break;
-        case 500:
-          if(typeof responseData === 'object')
-            router.navigate('/server-error', {state: {error: responseData}})
-          break;
+      case 403:
+        if(typeof responseData === 'object')
+          toast.error("403 Forbidden");
+        break;
+      case 404:
+        if(typeof responseData === 'object' && 'title' in responseData)
+          router.navigate('/not-found', {state: {error: responseData}})
+        break;
+      case 500:
+        if(typeof responseData === 'object')
+          router.navigate('/server-error', {state: {error: responseData}})
+        break;
       default:
         break;
     }
