@@ -24,8 +24,16 @@ export const adminApi = createApi({
                     body: product,
                 }
             }
+        }),
+        deleteProduct: builder.mutation<void, number>({
+            query:(productId)=>{
+                return {
+                    url: `products/${productId}`,
+                    method: "DELETE",
+                }
+            }
         })
     })
 })
 
-export const {useCreateProductMutation, useUpdateProductMutation} = adminApi;
+export const {useCreateProductMutation, useUpdateProductMutation, useDeleteProductMutation} = adminApi;

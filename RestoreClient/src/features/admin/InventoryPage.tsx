@@ -8,13 +8,23 @@ import { setPageNumber } from "../catalog/catalogSlice";
 import { useState } from "react";
 import ProductForm from "./ProductForm";
 import { Product } from "../../app/models/product";
+import { useDeleteProductMutation } from "./adminApi";
 
 const InventoryPage = () => {
     const params = useAppSelector(state => state.catalogSlice);
     const {data, refetch} = useFetchProductsQuery(params);
+    const [deleteProduct] = useDeleteProductMutation();
     const dispatch = useAppDispatch();
     const [editMode, setEditMode] = useState(false);
     const [productToEdit, setProductToEdit] = useState<Product | null>(null);
+    const handleDeleteProduct = async(productId:number)=>{
+        try{
+            await deleteProduct(productId).unwrap();
+            refetch();
+        }catch(err){
+            console.log(err)
+        }
+    }
     if(editMode) return(
         <ProductForm
         product={productToEdit}
@@ -71,7 +81,7 @@ const InventoryPage = () => {
                                     setProductToEdit(product);
                                 }
                                 }/>
-                                <Button startIcon={<Delete/>} color="error"/>
+                                <Button onClick={()=>handleDeleteProduct(product.id)} startIcon={<Delete/>} color="error"/>
                             </TableCell>
                         </TableRow>
                         ))}
