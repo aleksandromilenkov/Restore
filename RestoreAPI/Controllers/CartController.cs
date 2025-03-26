@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using API.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestoreAPI.Data;
 using RestoreAPI.DTOs;
 using RestoreAPI.Entites;
 using RestoreAPI.Extensions;
+using RestoreAPI.Services;
 
 namespace RestoreAPI.Controllers
 {
-    public class CartController(StoreContext _context) : BaseApiController
+    public class CartController(StoreContext _context, DiscountService discountService, PaymentsService paymentsService) : BaseApiController
     {
         [HttpGet]
         public async Task<ActionResult<CartDTO>> GetCart()
@@ -53,6 +55,37 @@ namespace RestoreAPI.Controllers
             var result = await _context.SaveChangesAsync() > 0;
             if (result) return StatusCode(204);
             return BadRequest("Problem removing item.");
+        }
+
+        [HttpPost("{code}")]
+        public async Task<ActionResult<CartDTO>> AddCouponCode(string code)
+        {
+            // get the cart and check to ensure it has the client secret
+            var cart = await _context.Carts.GetCartWithItems(Request.Cookies["cartId"]);
+            if (cart == null || cart.ClientSecret == null) { return BadRequest(); }
+            // get the coupon
+            var coupon = await discountService.GetCouponFromPromoCode(code);
+            // update the cart with the coupon
+            cart.AppCoupon = coupon;
+            // update the payment intent
+            await paymentsService.CreateOrUpdatePaymentIntent(cart);
+            // save changes and return CartDTO if successful
+            var changes = await _context.SaveChangesAsync() > 0;
+            return changes ? cart.ToDTO() : BadRequest();
+        }
+        [HttpDelete("remove-coupon")]
+        public async Task<ActionResult> RemoveCouponFromCart()
+        {
+            // get the cart and check to ensure it has the client secret
+            var cart = await _context.Carts.GetCartWithItems(Request.Cookies["cartId"]);
+            if (cart == null || cart.ClientSecret == null) { return BadRequest(); }
+            // update the payment intent
+            await paymentsService.CreateOrUpdatePaymentIntent(cart);
+            // Remove the coupon from the cart (set it to null)
+            cart.AppCoupon = null;
+            // save changes and return Ok() if successful
+            var changes = await _context.SaveChangesAsync() > 0;
+            return changes ? Ok() : BadRequest();
         }
 
         private Cart CreateCart()

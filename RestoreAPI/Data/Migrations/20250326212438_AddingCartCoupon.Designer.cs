@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestoreAPI.Data;
 
@@ -11,9 +12,11 @@ using RestoreAPI.Data;
 namespace RestoreAPI.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20250326212438_AddingCartCoupon")]
+    partial class AddingCartCoupon
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -484,7 +487,7 @@ namespace RestoreAPI.Data.Migrations
 
             modelBuilder.Entity("RestoreAPI.Entites.Cart", b =>
                 {
-                    b.OwnsOne("RestoreAPI.Entites.AppCoupon", "AppCoupon", b1 =>
+                    b.OwnsOne("RestoreAPI.Entites.Coupon", "Coupon", b1 =>
                         {
                             b1.Property<int>("CartId")
                                 .HasColumnType("int");
@@ -492,9 +495,8 @@ namespace RestoreAPI.Data.Migrations
                             b1.Property<long?>("AmountOff")
                                 .HasColumnType("bigint");
 
-                            b1.Property<string>("CouponId")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                            b1.Property<int>("Id")
+                                .HasColumnType("int");
 
                             b1.Property<string>("Name")
                                 .IsRequired()
@@ -515,7 +517,7 @@ namespace RestoreAPI.Data.Migrations
                                 .HasForeignKey("CartId");
                         });
 
-                    b.Navigation("AppCoupon");
+                    b.Navigation("Coupon");
                 });
 
             modelBuilder.Entity("RestoreAPI.Entites.CartItem", b =>

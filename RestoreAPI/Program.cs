@@ -1,3 +1,4 @@
+using API.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RestoreAPI.Data;
@@ -25,6 +26,7 @@ builder.Services.AddIdentityApiEndpoints<User>(options =>
     options.User.RequireUniqueEmail = true;
 }).AddRoles<IdentityRole>()
   .AddEntityFrameworkStores<StoreContext>();
+builder.Services.AddScoped<DiscountService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

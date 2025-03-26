@@ -8,6 +8,7 @@ namespace RestoreAPI.Entites
         public List<CartItem> Items { get; set; } = new List<CartItem>();
         public string? ClientSecret { get; set; }
         public string? PaymentIntentId { get; set; }
+        public AppCoupon? AppCoupon { get; set; }
         public void AddItem(Product product, int quantity)
         {
             if (product == null) ArgumentNullException.ThrowIfNull(product);

@@ -1,9 +1,10 @@
-﻿using RestoreAPI.Entites;
+﻿using API.Services;
+using RestoreAPI.Entites;
 using Stripe;
 
 namespace RestoreAPI.Services
 {
-    public class PaymentsService(IConfiguration config)
+    public class PaymentsService(IConfiguration config, API.Services.DiscountService discountService)
     {
         public async Task<PaymentIntent> CreateOrUpdatePaymentIntent(Cart cart)
         {
@@ -12,10 +13,15 @@ namespace RestoreAPI.Services
             var intent = new PaymentIntent();
             var subtotal = cart.Items.Sum(i => i.Quantity * i.Product.Price);
             var deliveryFee = subtotal > 10000 ? 0 : 500;
+            long discount = 0;
+            if (cart.AppCoupon != null) {
+                discount = discountService.CalculateDiscountFromAmount(cart.AppCoupon, subtotal);
+            }
+            var totalAmount = subtotal + deliveryFee - discount;
             if (string.IsNullOrEmpty(cart.PaymentIntentId)) {
                 var options = new PaymentIntentCreateOptions
                 {
-                    Amount = subtotal + deliveryFee,
+                    Amount = totalAmount,
                     Currency = "usd",
                     PaymentMethodTypes = ["card"]
                 };
@@ -23,7 +29,7 @@ namespace RestoreAPI.Services
             } else {
                 var options = new PaymentIntentUpdateOptions
                 {
-                    Amount = subtotal + deliveryFee,
+                    Amount = totalAmount,
                 };
                 await service.UpdateAsync(cart.PaymentIntentId, options);
             }

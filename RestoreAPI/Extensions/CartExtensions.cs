@@ -12,7 +12,7 @@ namespace RestoreAPI.Extensions
             {
                 CartId = cart.CartId,
                 ClientSecret = cart.ClientSecret,
-                PaymentIntentId = cart.PaymentIntentId,
+                Coupon = cart.AppCoupon,
                 Items = cart.Items.Select(i => new CartItemDTO()
                 {
                     ProductId = i.ProductId,

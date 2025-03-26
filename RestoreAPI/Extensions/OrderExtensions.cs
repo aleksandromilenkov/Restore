@@ -18,6 +18,7 @@ namespace RestoreAPI.Extensions
                 PaymentSummary = order.PaymentSummary,
                 DeliveryFee = order.DeliveryFee,
                 Subtotal = order.Subtotal,
+                Discount = order.Discount,
                 Total = order.GetTotal(),
                 OrderItems = order.OrderItems.Select(item => item.ToOrderItemDTO()).ToList(),
             }).AsNoTracking();
@@ -33,6 +34,7 @@ namespace RestoreAPI.Extensions
                 OrderStatus = order.OrderStatus.ToString(),
                 PaymentSummary = order.PaymentSummary,
                 DeliveryFee = order.DeliveryFee,
+                Discount = order.Discount,
                 Subtotal = order.Subtotal,
                 Total = order.GetTotal(),
                 OrderItems = order.OrderItems.Select(item => item.ToOrderItemDTO()).ToList(),

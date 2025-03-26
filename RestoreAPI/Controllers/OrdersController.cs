@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestoreAPI.Data;
@@ -10,7 +11,7 @@ using RestoreAPI.Extensions;
 namespace RestoreAPI.Controllers
 {
     [Authorize]
-    public class OrdersController(StoreContext _context) : BaseApiController
+    public class OrdersController(StoreContext _context, DiscountService discountService) : BaseApiController
     {
         [HttpGet]
         public async Task<ActionResult<List<OrderDTO>>> GetOrders()
@@ -42,6 +43,9 @@ namespace RestoreAPI.Controllers
             var items = CreateOrderItems(cart.Items);
             if (items == null) return BadRequest("Some items out of stock");
             var subtotal = items.Sum(i => i.Price * i.Quantity);
+            var discount = cart.AppCoupon != null
+                ? subtotal - discountService.CalculateDiscountFromAmount(cart.AppCoupon, subtotal)
+                : 0;
             var deliveryFee = CalculateDeliveryFee(subtotal);
             var order = await _context.Orders.Include(o => o.OrderItems)
                 .FirstOrDefaultAsync(o => o.PaymentIntentId == cart.PaymentIntentId);
@@ -55,7 +59,7 @@ namespace RestoreAPI.Controllers
                     PaymentSummary = createOrderDto.PaymentSummary,
                     Subtotal = subtotal,
                     DeliveryFee = deliveryFee,
-                    Discount = 0,
+                    Discount = discount,
                     PaymentIntentId = cart.PaymentIntentId,
                 };
                 await _context.Orders.AddAsync(order);
