@@ -94,7 +94,7 @@ export const cartApi = createApi({
       },
     }),
     clearCart: builder.mutation<void, void>({
-      queryFn: () => ({data: undefined}),
+      queryFn: () => ({data: undefined}), // not making API request just removing Redux state
       onQueryStarted: async(_, {dispatch}) => {
         dispatch(cartApi.util.updateQueryData('fetchCart', undefined, (draft) => {
           draft.items = [];
@@ -102,7 +102,35 @@ export const cartApi = createApi({
         }));
         Cookies.remove("cartId");
       }
-    })
+    }),
+    addCoupon: builder.mutation<Cart, string>({
+      query: (code) => ({
+        url: `cart/${code}`,
+        method: "POST",
+      }),
+      onQueryStarted: async ( _, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          dispatch(cartApi.util.invalidateTags(["Cart"]));
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
+    removeCoupon: builder.mutation<void, void>({
+      query: () => ({
+        url: "cart/remove-coupon",
+        method: "DELETE",
+      }),
+      onQueryStarted: async ( _, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          dispatch(cartApi.util.invalidateTags(["Cart"]));
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
   }),
 });
 
@@ -111,4 +139,6 @@ export const {
   useAddItemToCartMutation,
   useRemoveItemFromCartMutation,
   useClearCartMutation,
+  useAddCouponMutation,
+  useRemoveCouponMutation
 } = cartApi;

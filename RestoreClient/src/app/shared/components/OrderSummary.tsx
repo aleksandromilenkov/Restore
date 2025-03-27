@@ -5,14 +5,42 @@ import {
   Button,
   TextField,
   Paper,
+  IconButton,
 } from "@mui/material";
 import { currencyFormat } from "../../../lib/util";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "../../../lib/hooks/useCart";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useAddCouponMutation, useRemoveCouponMutation } from "../../../features/cart/cartApi";
+import { useState } from "react";
+import { DeleteOutline } from "@mui/icons-material";
+import { Coupon } from "../../models/cart";
 
+interface CouponFormValues {
+  code: string;
+}
 export default function OrderSummary() {
   const location = useLocation();
-  const {isLoadingCart, subtotal, deliveryFee} = useCart();
+  const {isLoadingCart, subtotal, deliveryFee, discount, cartCoupon} = useCart();
+  const [createCoupon] = useAddCouponMutation();
+  const [removeCoupon] = useRemoveCouponMutation();
+  const [coupon, setCoupon] = useState<Coupon | null | undefined>(cartCoupon);
+  const {register, handleSubmit, reset, formState: {errors}} = useForm<CouponFormValues>();
+  const onSubmit: SubmitHandler<CouponFormValues> = async (data) => { 
+    console.log(data);
+           try{
+              const resp = await createCoupon(data.code).unwrap();
+              if(resp.coupon) setCoupon(resp.coupon);
+              else setCoupon(null);
+           }catch(err){
+              console.log(err);
+           }
+      }
+  const handleRemoveCoupon = () =>{
+    removeCoupon();
+    reset();
+    setCoupon(null);
+  }
   if (isLoadingCart) return <Typography>Loading...</Typography>;
   return (
     <Box
@@ -38,8 +66,7 @@ export default function OrderSummary() {
           <Box display="flex" justifyContent="space-between" mb={1}>
             <Typography color="textSecondary">Discount</Typography>
             <Typography color="success">
-              {/* TODO */}
-              -$0.00
+              {currencyFormat(discount)}
             </Typography>
           </Box>
           <Box display="flex" justifyContent="space-between" mb={1}>
@@ -49,7 +76,7 @@ export default function OrderSummary() {
           <Divider sx={{ my: 2 }} />
           <Box display="flex" justifyContent="space-between" mb={1}>
             <Typography color="textSecondary">Total</Typography>
-            <Typography>{currencyFormat(subtotal + deliveryFee)}</Typography>
+            <Typography>{currencyFormat(subtotal + deliveryFee - discount)}</Typography>
           </Box>
         </Box>
 
@@ -73,24 +100,45 @@ export default function OrderSummary() {
       </Paper>
 
       {/* Coupon Code Section */}
-      <Paper sx={{ width: "100%", borderRadius: 3, p: 3 }}>
-        <form>
+      {location.pathname.includes("checkout") && (<Paper sx={{ width: "100%", borderRadius: 3, p: 3 }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Typography variant="subtitle1" component="label">
             Do you have a voucher code?
           </Typography>
-
+          {coupon && (<Box display="flex" gap="1" alignItems="center">
+            <Typography sx={{ fontSize: '0.875rem' }}>{coupon.percentOff}% discount applied</Typography>
+            <IconButton onClick={()=> handleRemoveCoupon()} color="error">
+           <DeleteOutline sx={{ color: "red" }}/>
+          </IconButton>
+            </Box>)
+            }
           <TextField
             label="Voucher code"
             variant="outlined"
             fullWidth
+            disabled={coupon != null}
             sx={{ my: 2 }}
+            {...register("code", {
+              required: "Coupon code is required",
+              minLength: {
+                value: 5,
+                message: "Coupon code must be at least 5 characters long",
+              },
+              maxLength: {
+                value: 20,
+                message: "Coupon code cannot exceed 20 characters",
+              },
+            })}
+            error={!!errors.code}
+            helperText={errors.code?.message}
           />
 
-          <Button type="submit" variant="contained" color="primary" fullWidth>
+          <Button type="submit" variant="contained" color="primary" fullWidth disabled={coupon != null}>
             Apply code
           </Button>
         </form>
       </Paper>
+    )}
     </Box>
   );
 }
