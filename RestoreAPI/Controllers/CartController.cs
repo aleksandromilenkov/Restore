@@ -71,7 +71,7 @@ namespace RestoreAPI.Controllers
             await paymentsService.CreateOrUpdatePaymentIntent(cart);
             // save changes and return CartDTO if successful
             var changes = await _context.SaveChangesAsync() > 0;
-            return changes ? cart.ToDTO() : BadRequest();
+            return changes ? cart.ToDTO() : BadRequest("Invalid coupon code");
         }
         [HttpDelete("remove-coupon")]
         public async Task<ActionResult> RemoveCouponFromCart()
