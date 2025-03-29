@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestoreAPI.DTOs;
 using RestoreAPI.Entites;
+using RestoreAPI.Services;
 
 namespace RestoreAPI.Controllers
 {
-    public class AccountController(SignInManager<User> signInManager) : BaseApiController
+    public class AccountController(SignInManager<User> signInManager, ImageService _imageService) : BaseApiController
     {
         [HttpPost("register")]
         public async Task<ActionResult> RegisterUser(RegisterDTO registerDTO)
@@ -37,6 +38,7 @@ namespace RestoreAPI.Controllers
             {
                 user.Email,
                 user.UserName,
+                user.PictureUrl,
                 Roles = roles
             });
         }
@@ -75,8 +77,12 @@ namespace RestoreAPI.Controllers
         [HttpPut("update-email")]
         public async Task<ActionResult> UpdateEmail([FromBody] UpdateEmailDTO updateEmailDto)
         {
-            var user = await signInManager.UserManager.FindByNameAsync(User.Identity!.Name);
+            var userName = User.Identity?.Name;
+            if (string.IsNullOrEmpty(userName)) return Unauthorized();
+
+            var user = await signInManager.UserManager.FindByNameAsync(userName);
             if (user == null) return Unauthorized();
+
 
             var emailExists = await signInManager.UserManager.FindByEmailAsync(updateEmailDto.NewEmail);
             if (emailExists != null) return BadRequest("Email is already in use.");
@@ -112,6 +118,34 @@ namespace RestoreAPI.Controllers
 
         }
 
+        [Authorize]
+        [HttpPut("update-image")]
+        public async Task<ActionResult> UpdateImage([FromForm] UpdateImageDTO updateImageDTO)
+        {
+            var user = await signInManager.UserManager.FindByNameAsync(User.Identity!.Name);
+            if (user == null) return Unauthorized();
+
+            if (updateImageDTO.File != null)
+            {
+                var imageResult = await _imageService.AddImageAsync(updateImageDTO.File);
+                if (imageResult.Error != null)
+                {
+                    return BadRequest($"Error {imageResult.Error.Message}");
+                }
+                if (!string.IsNullOrEmpty(user.PublicId))
+                {
+                    await _imageService.DeleteImageAsync(user.PublicId);
+                }
+                user.PictureUrl = imageResult.SecureUrl.AbsoluteUri;
+                user.PublicId = imageResult.PublicId;
+                var updateResult = await signInManager.UserManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    return BadRequest(updateResult.Errors.Select(e => e.Description));
+                }
+            }
+            return NoContent();
+        }
 
     }
 }

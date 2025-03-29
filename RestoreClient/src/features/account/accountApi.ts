@@ -86,7 +86,18 @@ export const accountApi = createApi({
                 }
             }
         }),
+        updateImage: builder.mutation<void, FormData>({
+            query: (data)=> ({url:"account/update-image", method:"PUT",body: data }),
+            onQueryStarted: async(_, {dispatch, queryFulfilled})=>{
+                try{
+                    await queryFulfilled;
+                    dispatch(accountApi.util.invalidateTags(["UserInfo"]));
+                }catch(err){
+                    console.log(err);
+                }
+            }
+        }),
     })
 });
 
-export const {useLoginMutation, useRegisterMutation, useLogoutMutation, useUserInfoQuery, useLazyUserInfoQuery, useFetchAddressQuery, useUpdateUserAddressMutation, useUpdateEmailMutation, useUpdatePasswordMutation} = accountApi;
+export const {useLoginMutation, useRegisterMutation, useLogoutMutation, useUserInfoQuery, useLazyUserInfoQuery, useFetchAddressQuery, useUpdateUserAddressMutation, useUpdateEmailMutation, useUpdatePasswordMutation, useUpdateImageMutation} = accountApi;

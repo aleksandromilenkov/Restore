@@ -2,6 +2,7 @@ export type User = {
   email: string;
   userName: string;
   roles: string[];
+  pictureUrl?: string;
 };
 
 export type Address = {

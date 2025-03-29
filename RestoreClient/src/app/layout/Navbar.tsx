@@ -86,9 +86,16 @@ const Navbar = () => {
               <ShoppingCart />
             </Badge>
           </IconButton>
+          
           { user 
             ? (
-            <UserMenu user={user}/>)
+              <Box display="flex">
+                <Box display="flex" alignContent="center" justifyContent="center">
+            <img src={user?.pictureUrl || "https://t4.ftcdn.net/jpg/03/32/59/65/240_F_332596535_lAdLhf6KzbW6PWXBWeIFTovTii1drkbT.jpg"} alt="profile image"style={{height:50, borderRadius:"50px"}}/>
+                </Box>
+            <UserMenu user={user}/>
+              </Box>
+          )
             : (<List sx={{ display: "flex" }}>
             {rightLinks.map(({ title, path }, idx) => (
               <ListItem component={NavLink} to={path} key={idx} sx={navStyles}>
