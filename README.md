@@ -60,7 +60,7 @@ ReStore is a modern e-commerce web application built with **ASP.NET Web API** an
 ## 📦 Installation & Setup
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/yourusername/reStore.git
+git clone https://github.com/aleksandromilenkov/Restore.git
 cd reStore
 ```
 
@@ -81,7 +81,7 @@ cd frontend
 # Install dependencies
 yarn install  # or npm install
 # Start the React app
-yarn start  # or npm start
+npm run dev
 ```
 
 ## 🎯 Roadmap
@@ -90,8 +90,6 @@ yarn start  # or npm start
 - ✅ User authentication & profile management
 - ✅ Checkout & payment with Stripe
 - ✅ Order management
-- 🔄 Wishlist feature (Coming Soon)
-- 🔄 Email notifications for orders (Coming Soon)
 
 ## 🤝 Contributing
 Contributions are welcome! Feel free to fork the repository and submit a pull request.
@@ -100,7 +98,7 @@ Contributions are welcome! Feel free to fork the repository and submit a pull re
 This project is licensed under the **MIT License**.
 
 ## 📞 Contact
-For inquiries or collaboration, contact me at [your-email@example.com](mailto:your-email@example.com).
+For inquiries or collaboration, contact me at [aleksandro.macedonia@gmail.com](mailto:aleksandro.macedonia@gmail.com).
 
 ---
 ### ⭐ If you like this project, don't forget to star the repo!
