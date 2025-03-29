@@ -63,8 +63,30 @@ export const accountApi = createApi({
                     patchResult.undo();
                 }
             }
-        })
+        }),
+        updateEmail: builder.mutation<void,{ newEmail: string }>({
+            query: (data)=> ({url:"account/update-email", method:"PUT",body: data }),
+            onQueryStarted: async(_, {dispatch, queryFulfilled})=>{
+                try{
+                    await queryFulfilled;
+                    dispatch(accountApi.util.invalidateTags(["UserInfo"]));
+                }catch(err){
+                    console.log(err);
+                }
+            }
+        }),
+        updatePassword: builder.mutation<void,{ currentPassword: string; newPassword: string }>({
+            query: (data)=> ({url:"account/update-password", method:"PUT",body: data }),
+            onQueryStarted: async(_, {dispatch, queryFulfilled})=>{
+                try{
+                    await queryFulfilled;
+                    dispatch(accountApi.util.invalidateTags(["UserInfo"]));
+                }catch(err){
+                    console.log(err);
+                }
+            }
+        }),
     })
 });
 
-export const {useLoginMutation, useRegisterMutation, useLogoutMutation, useUserInfoQuery, useLazyUserInfoQuery, useFetchAddressQuery, useUpdateUserAddressMutation} = accountApi;
+export const {useLoginMutation, useRegisterMutation, useLogoutMutation, useUserInfoQuery, useLazyUserInfoQuery, useFetchAddressQuery, useUpdateUserAddressMutation, useUpdateEmailMutation, useUpdatePasswordMutation} = accountApi;

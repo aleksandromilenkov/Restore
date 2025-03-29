@@ -40,7 +40,7 @@ const UserMenu = ({user}:Props) => {
           onClose={handleClose}
           TransitionComponent={Fade}
         >
-          <MenuItem>
+          <MenuItem component={Link} to="/profile">
             <ListItemIcon>
                 <Person/>
             </ListItemIcon>

@@ -70,5 +70,48 @@ namespace RestoreAPI.Controllers
             if(address == null) return NoContent();
             return Ok(address);
         }
+
+        [Authorize]
+        [HttpPut("update-email")]
+        public async Task<ActionResult> UpdateEmail([FromBody] UpdateEmailDTO updateEmailDto)
+        {
+            var user = await signInManager.UserManager.FindByNameAsync(User.Identity!.Name);
+            if (user == null) return Unauthorized();
+
+            var emailExists = await signInManager.UserManager.FindByEmailAsync(updateEmailDto.NewEmail);
+            if (emailExists != null) return BadRequest("Email is already in use.");
+
+            var emailResult = await signInManager.UserManager.SetEmailAsync(user, updateEmailDto.NewEmail);
+            if (!emailResult.Succeeded) return BadRequest(emailResult.Errors.Select(e => e.Description));
+
+            var usernameResult = await signInManager.UserManager.SetUserNameAsync(user, updateEmailDto.NewEmail);
+            
+            if (!usernameResult.Succeeded) return BadRequest(usernameResult.Errors.Select(e => e.Description));
+            
+            await signInManager.SignInAsync(user, isPersistent: false); // refresh authentication to update claims
+
+            return Ok(new { message = "Email updated successfully." });
+
+        }
+
+        [Authorize]
+        [HttpPut("update-password")]
+        public async Task<ActionResult> UpdatePassword([FromBody] UpdatePasswordDTO updatePasswordDto)
+        {
+            var user = await signInManager.UserManager.FindByNameAsync(User.Identity!.Name);
+            if (user == null) return Unauthorized();
+
+            var result = await signInManager.UserManager.ChangePasswordAsync(user, updatePasswordDto.CurrentPassword, updatePasswordDto.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description));
+            }
+
+            return Ok(new { message = "Password updated successfully." });
+
+        }
+
+
     }
 }
